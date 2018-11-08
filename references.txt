@@ -1,0 +1,9 @@
+https://stackoverflow.com/questions/82875/how-to-list-the-tables-in-a-sqlite-database-file-that-was-opened-with-attach
+http://flask-sqlalchemy.pocoo.org/2.3/queries/
+https://wtforms.readthedocs.io/en/stable/validators.html
+http://flask.pocoo.org/docs/0.12/patterns/wtforms/
+https://www.youtube.com/playlist?list=PLillGF-RfqbbbPz6GSEM9hLQObuQjNoj_
+https://www.youtube.com/playlist?list=PLXmMXHVSvS-BlLA5beNJojJLlpE0PJgCW
+https://stackoverflow.com/questions/3330435/is-there-an-sqlite-equivalent-to-mysqls-describe-table
+https://stackoverflow.com/questions/20848300/unable-to-create-autoincrementing-primary-key-with-flask-sqlalchemy
+https://stackoverflow.com/questions/33855829/materializecss-icons-not-working

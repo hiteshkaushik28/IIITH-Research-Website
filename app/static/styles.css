@@ -1,0 +1,46 @@
+/* nav ul li a {
+    color: black;
+}
+#logo {
+    color: black;
+} */
+
+/* #logo_img {
+    height: 75px;
+}
+
+nav {
+    height: 80px;
+    line-height: 80px;
+}
+
+nav i, nav [class^="mdi-"], nav [class*="mdi-"], nav i.material-icons {
+    height: 80px;
+    line-height: 80px;
+}
+
+nav .button-collapse i {
+    height: 80px;
+    line-height: 80px;
+}
+
+nav .brand-logo { 
+    font-size: 1.6rem; 
+}
+
+@media only screen and (min-width: 601px){
+    nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
+        height: 80px;
+        line-height: 80px;
+    }
+} */
+
+main {
+    margin-left: 5%;
+    margin-right: 5%;
+    padding-left: 3%;
+    padding-right: 2%;
+    background-color: #cfd8dc;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
