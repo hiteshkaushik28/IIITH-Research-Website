@@ -1,10 +1,9 @@
-.entry { 
-    color:black;
-    padding-top: 5%;
-    padding-left: 5%;
-    margin-top: 1%;
-    margin-left: 1%;
+.collapsible li.active i {
+    -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+    transform: rotate(90deg);
 }
-.entries {
-    margin-top: 5%;
+.info{
+    float: center;
+    margin-left: 0.2%;
+    margin-bottom: 2%;
 }

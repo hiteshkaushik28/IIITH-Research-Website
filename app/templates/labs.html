@@ -1,23 +1,11 @@
 {% extends "labs_base.html" %}
 {% block content %}
-       <div class="entries">
-        {% for l in lab %}
-        <div class="container">
-            <div class="panel-group" id="accordion">
-              <div class="panel panel-default">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ l.lab_id }}">{{ l.name }}</a>
-                  </h4>
-                </div>
-                <div id="collapse_{{ l.lab_id }}" class="panel-collapse collapse">
-                  <div class="panel-body">{{ l.info|safe }}</div>
-                </div>
-              </div>
-              </div>
-            </div> 
-          </div>
-        {% endfor %}
-    </div>
+    <ul class="collapsible popout">
+      {% for l in lab %}
+      <li>
+        <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>{{ l.name }}</b></div>
+        <div class="collapsible-body"><span>{{ l.info|safe }}<button type="button" class="btn btn-dark info" onclick="window.open('{{ l.url }}')">More Info</button></span></div>
+      </li>
+      {% endfor %}
+    </ul>
 {% endblock %}
