@@ -44,3 +44,12 @@ main {
     padding-top: 50px;
     padding-bottom: 50px;
 }
+
+.row .search_row {
+    padding: 0;
+ }
+
+::placeholder {
+    color: black;
+    opacity: 1; /* Firefox */
+}
