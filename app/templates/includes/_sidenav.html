@@ -1,0 +1,25 @@
+ <!-- Sidenav starts -->
+ {% if session.logged_in %}
+ <ul id="slide-out" class="sidenav">
+     <li>
+         <div class="user-view">
+             <div class="background">
+                 <img src="{{ url_for('static', filename = 'book-background-green.jpg') }}">
+             </div>
+             <a href="#user"><img class="circle" src="{{ url_for('static', filename = 'profile_girl.png') }}"></a>
+             <a href="#name"><span class="white-text name">Namexxx</span></a>
+             <a href="#email"><span class="white-text email">xxx@research.iiit.ac.in</span></a>
+             <a href="#rollnum"><span class="white-text rollnum">2018201xxx</span></a>
+         </div>
+     </li>
+     <li><a href="#!"><i class="material-icons">add_circle</i>Follow</a></li>
+     <li><a href="#!">Reasearch Interests</a></li>
+     <li><div class="divider"></div></li>
+     <li><a class="subheader">Professors</a></li>
+     <li><a class="subheader">Labs</a></li>
+     <li><div class="divider"></div></li>
+     <li><a class="waves-effect" href="#!">Edit Profile</a></li>
+     <li><a class="waves-effect" href="#!">Logout</a></li>
+ </ul>
+{% endif %}
+<!-- Sidenav ends -->

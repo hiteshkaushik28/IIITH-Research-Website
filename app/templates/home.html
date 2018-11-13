@@ -1,12 +1,117 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <!-- <div class="jumbotron text-center">
-        <h1>Welcome to FlaskApp</h1>
-        <p class="lead"> Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quod similique voluptates quaerat, consectetur perspiciatis et odit. Nostrum inventore illum ipsa quod vel exercitationem, eaque molestiae libero atque esse animi iste.</p>
-        {% if session.logged_in == NULL %}
-            <a href="/register" class="btn btn-primary btn-lg">Register</a>
-            <a href="/login" class="btn btn-success btn-lg">Login</a>
-        {% endif %}
-    </div> -->
-{% endblock %}
+
+<!-- <h1>Student <small>Welcome {{session.username}}</small></h1> -->
+    
+<div class="navbar-fixed" style="position: fixed;">
+        <ul id="tabs-swipe-demo" class="tabs tabs-fixed-width tab-demo z-depth-5" style="position: fixed;"> 
+            <li class="tab col s3"><a class="active" href="#Timeline"><b>Timeline</b></a></li>
+            <li class="tab col s3"><a href="#My_Research"><b>My Research</b></a></li>
+            <li class="tab col s3"><a href="#Following"><b>Following</b></a></li>
+            <li class="tab col s3"><a href="#My_Labs"><b>My Labs</b></a></li>
+            <li class="tab col s3"><a href="#Add_Research"><b>Add Research</b></a></li>
+            {% if session.id == "Professor" %}
+            <li class="tab col s3"><a href="#My_students"><b>My Students</b></a></li>
+            {% endif %}
+        </ul>    
+</div>
+<br><br><br>
+<div id="Timeline" class="col s12">
+    <ul class="collapsible popout">
+        <li>
+            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
+            <div class="collapsible-body" align="justify">
+                <span>
+                    Inside data
+                </span>
+            </div>
+        </li>
+    </ul>
+    <br>
+        <!-- {% for lab in labs %}
+            <a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span><b>{{lab.name}}</b></h6></a>
+        {% endfor %} -->
+</div>
+<div id="My_Research" class="col s12">
+    <ul class="collapsible popout">
+        <li>
+            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
+            <div class="collapsible-body" align="justify">
+                <span>
+                    Inside data
+                </span>
+            </div>
+        </li>
+    </ul>
+    <br>
+        <!-- {% for lab in labs %}
+            <a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span><b>{{lab.name}}</b></h6></a>
+        {% endfor %} -->
+</div>
+<div id="Following" class="col s12">
+    <ul class="collapsible popout">
+        <li>
+            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
+            <div class="collapsible-body" align="justify">
+                <span>
+                    Inside data
+                </span>
+            </div>
+        </li>
+    </ul>
+    <br>
+        <!-- {% for lab in labs %}
+            <a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span><b>{{lab.name}}</b></h6></a>
+        {% endfor %} -->
+</div>
+<div id="My_Labs" class="col s12">
+    <ul class="collapsible popout">
+        <li>
+            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
+            <div class="collapsible-body" align="justify">
+                <span>
+                    Inside data
+                </span>
+            </div>
+        </li>
+    </ul>
+    <br>
+        <!-- {% for lab in labs %}
+            <a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span><b>{{lab.name}}</b></h6></a>
+        {% endfor %} -->
+</div>
+<div id="Add_Research" class="col s12">
+    <ul class="collapsible popout">
+        <li>
+            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
+            <div class="collapsible-body" align="justify">
+                <span>
+                    Inside data
+                </span>
+            </div>
+        </li>
+    </ul>
+    <br>
+</div>
+{% if session.id == "Professor" %}
+<div id="My_students" class="col s12">
+    <ul class="collapsible popout">
+        <li>
+            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
+            <div class="collapsible-body" align="justify">
+            <span>
+                Inside data
+            </span>
+            </div>
+        </li>
+    </ul>
+    <br>
+</div>
+{% endif %}
+<!-- {% if condition == "Professor" %}
+    {% block content %}
+    <div>blah blah blah blah</div>
+    {% endblock content %}
+{% endif %}
+{% endblock %} -->

@@ -2,17 +2,24 @@
 <nav class="blue darken-1">
     <div class="container-fluid">
         <div class="nav-wrapper">
-            <!-- <a id="logo" href="{{ url_for('home') }}" class="brand-logo center"><img id="logo_img" src="{{ url_for('static',filename = 'iiith_logo.gif') }}"></a> -->
-            <a id="logo" href="{{ url_for('home') }}" class="brand-logo center">IIITH Research</a>
+            <!-- <a id="logo" href="{{ url_for('index') }}" class="brand-logo center"><img id="logo_img" src="{{ url_for('static',filename = 'iiith_logo.gif') }}"></a> -->
+            <a id="logo" href="{{ url_for('index') }}" class="brand-logo center">IIITH Research</a>
             <ul>
                 {% if session.logged_in %}
-                    <li class="active"><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('labs') }}">Labs</a></li>
+                    <li><a href="{{ url_for('articles') }}">Publications</a></li>
                 {% endif %}
                 <!-- <li><a href="{{ url_for('about') }}">About</a></li> -->
-                <li><a href="{{ url_for('articles') }}">Publications</a></li>
             </ul>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <ul id="nav-mobile" class="right">
                 {% if session.logged_in %}
+                    <li>
+                        <div class="chip">
+                            <img src="static/profile_girl.png" alt="" class="circle responsive-img">
+                            {{session.username}}
+                        </div>
+                    </li>
                     <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
                 {% else %}

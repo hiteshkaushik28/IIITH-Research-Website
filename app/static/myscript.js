@@ -1,7 +1,9 @@
 //search dropdown button
 
 dropdown_options = {
-    hover: true
+    hover: true,
+    alignment: 'bottom',
+    constrainWidth: false
 };
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -9,4 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var instances = M.Dropdown.init(elems, dropdown_options);
 });
 
-// $('.dropdown-trigger').dropdown();
+
+//sidenav
+sidenav_options = {};
+
+document.addEventListener('DOMContentLoaded', function()
+{
+    var elems = document.querySelectorAll('.sidenav');
+    var instances = M.Sidenav.init(elems, sidenav_options);
+});

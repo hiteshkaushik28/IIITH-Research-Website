@@ -34,8 +34,15 @@ nav .brand-logo {
         line-height: 80px;
     }
 } */
-
+html{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
 main {
+    height: auto;
+    width: auto;
+    /* position: absolute; */
     margin-left: 5%;
     margin-right: 5%;
     padding-left: 3%;
@@ -43,6 +50,7 @@ main {
     background-color: #cfd8dc;
     padding-top: 50px;
     padding-bottom: 50px;
+    overflow:auto;
 }
 
 .row .search_row {
@@ -53,3 +61,47 @@ main {
     color: black;
     opacity: 1; /* Firefox */
 }
+
+.navbar-fixed
+{
+    padding-top: 0;
+}
+
+
+/* ravi */
+body{
+    height: 100%;
+    width:100%;
+}
+.carousel .carousel-item{
+    width:auto;
+}
+
+/* .tabs-content{height: 100%;} */
+/* 
+.tabs .tab a{
+    color:#0288d1;
+} Black color to the text */
+
+.tabs .tab a:hover {
+    background-color: lightblue;
+    color:rgb(255, 255, 255);
+} /*Text color on hover*/
+
+/* .tabs .tab a.active {
+    background-color:#0288d1;
+    color:#000;
+} */
+/* .tabs .tab a::after {
+    background-color:#0288d1;
+    color:#000;
+} */
+.tabs .indicator {
+    background-color:lightblue;
+}
+.collapsible li.active i {
+    -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+    transform: rotate(90deg);
+}
+
+/* ravi */

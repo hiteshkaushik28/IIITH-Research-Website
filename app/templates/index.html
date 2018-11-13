@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="navbar-fixed" style="position: fixed;">
+        <ul id="tabs-swipe-demo" class="tabs tabs-fixed-width tab-demo z-depth-5" style="position: fixed;"> 
+            <li class="tab col s3"><a class="active" href="#publications"><b>Publications</b></a></li>
+            <li class="tab col s3"><a href="#labs"><b>Labs</b></a></li>
+        </ul>    
+    </div>
+    <br><br><br>
+                
+    <div id="publications" class="col s12" style="overflow: auto; padding: 0%;">
+        <table class="responsive-table highlight striped">
+            <tbody>
+                <div class="collection">
+                    {% for lab in labs %}
+                    <tr>
+                        <td><a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><b>{{lab.name}}</b></h6></a></td>
+                        <td><a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span></a></td>
+                    </tr>
+                    {% endfor %}
+                </div>
+            </tbody>
+        </table>
+    </div>
+    <div id="labs" class="col s12 " style="overflow: auto; padding: 0%;">
+        <div class="collection">
+            {% for lab in labs %}
+                <a href="{{url_for('login')}}" class="collection-item z-depth-5"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span><b>{{lab.name}}</b></h6></a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <ul class="collapsible popout">
+      {% for l in lab %}
+      <li>
+        <div class="collapsible-header"><i class="material-icons more">arrow_drop_down</i><b>{{ l.name }}</b></div>
+        <div class="collapsible-body"><span>{{ l.info|safe }}<button type="button" class="btn btn-dark info" onclick="window.open('{{ l.url }}')">More Info</button></span></div>
+      </li>
+      {% endfor %}
+    </ul>
+{% endblock %}
