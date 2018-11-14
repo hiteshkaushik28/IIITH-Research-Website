@@ -11,6 +11,7 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from functools import wraps
 from datetime import datetime
+from sqlalchemy_utils import EmailType
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://///home/bhavidhingra/google-drive-iiith/Semester_#1/CSE505 : Scripting & Computer Environments/Projects/IIITH-Research-Website/database/iiith_research.db'
@@ -19,14 +20,38 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 class Articles(db.Model):
+	__tablename__ = 'articles'
+
 	id = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(50))
 	author = db.Column(db.String(50))
 	body = db.Column(db.Text)
 	date_posted = db.Column(db.DateTime)
 
+class Publications(db.Model):
+	__tablename__ = 'publications'
+
+	id = db.Column(db.Integer, primary_key=True)
+	title = db.Column(db.String(100))
+	conference = db.Column(db.String(100))
+	report_no = db.Column(db.String(100))
+	abstract = db.Column(db.Text)
+	date_published = db.Column(db.String(50))
+	likes = db.Column(db.Integer)
+	pdf = db.Column(db.Text)
+
+
+class Publications_authors(db.Model):
+	__tablename__ = 'publications_authors'
+
+	temp_id = db.Column(db.Integer, primary_key=True)
+	id = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='cascade', ondelete = 'cascade'))
+	authors = db.Column(db.String(100))
+
 
 class Users(db.Model):
+	__tablename__ = 'users'
+
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50))
 	email = db.Column(db.String(50))
@@ -34,12 +59,139 @@ class Users(db.Model):
 	password = db.Column(db.String(50))
 	register_date = db.Column(db.DateTime)
 
+
 class Labs(db.Model):
+	__tablename__ = 'labs'
+
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50))
 	url = db.Column(db.String(100))
 	desription = db.Column(db.Text)
 	num_followers = db.Column(db.Integer)
+
+
+class Students(db.Model):
+	__tablename__ = 'students'
+
+	rollno = db.Column(db.Integer, primary_key=True)
+	password = db.Column(db.String(50))
+	name = db.Column(db.String(60))
+	fname = db.Column(db.String(20))
+	mname = db.Column(db.String(20))
+	lname = db.Column(db.String(20))
+	email = db.Column(EmailType)
+	stream = db.Column(db.String(30))	
+	yearofjoin = db.Column(db.Date)
+
+
+class Professors(db.Model):
+	__tablename__ = 'professors'
+
+	profid = db.Column(db.Integer, primary_key=True)
+	password = db.Column(db.String(50))
+	name = db.Column(db.String(60))
+	fname = db.Column(db.String(20))
+	mname = db.Column(db.String(20))
+	lname = db.Column(db.String(20))
+	email = db.Column(EmailType)
+	department = db.Column(db.String(30))	
+	yearofjoin = db.Column(db.Date)
+
+class Student_following_Students(db.Model):
+	__tablename__ = 'student_following_students'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+	followed_rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+
+
+class Professor_following_Professors(db.Model):
+	__tablename__ = 'professor_following_professors'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+	followed_profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+	
+class Student_following_Professors(db.Model):
+	__tablename__ = 'student_following_professors'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+
+
+class Student_following_Labs(db.Model):
+	__tablename__ = 'student_following_labs'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+	labid = db.Column(db.Integer,db.ForeignKey('labs.id', onupdate='CASCADE', ondelete='CASCADE'))
+
+class Professor_following_Students(db.Model):
+	__tablename__ = 'professor_following_students'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+	rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+
+class Professor_following_Labs(db.Model):
+	__tablename__ = 'professor_following_labs'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+	labid = db.Column(db.Integer,db.ForeignKey('labs.id', onupdate='CASCADE', ondelete='CASCADE'))
+
+
+class Professor_enrolledin_Labs(db.Model):
+	__tablename__ = 'professor_enrolledin_labs'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+	labid = db.Column(db.Integer,db.ForeignKey('labs.id', onupdate='CASCADE', ondelete='CASCADE'))
+
+class Student_owns_Publications(db.Model):
+	__tablename__ = 'student_owns_publications'
+	tempid = db.Column(db.Integer, primary_key=True)
+	rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+	publicationid = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='CASCADE', ondelete='CASCADE'))
+
+class Professor_owns_Publications(db.Model):
+	__tablename__ = 'professor_owns_publications'
+	tempid = db.Column(db.Integer, primary_key=True)
+	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+	publicationid = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='CASCADE', ondelete='CASCADE'))
+
+class Lab_owns_Publications(db.Model):
+	__tablename__ = 'lab_owns_publications'
+	tempid = db.Column(db.Integer, primary_key=True)
+	labid = db.Column(db.Integer,db.ForeignKey('labs.id', onupdate='CASCADE', ondelete='CASCADE'))
+	publicationid = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='CASCADE', ondelete='CASCADE'))
+
+
+class Num_following_Student(db.Model):
+	__tablename__ = 'num_following_student'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	num = db.Column(db.Integer)
+	followed_rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+
+
+class Num_following_Professor(db.Model):
+	__tablename__ = 'num_following_professor'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	num = db.Column(db.Integer)
+	followed_profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+
+
+class Num_following_Lab(db.Model):
+	__tablename__ = 'num_following_lab'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	num = db.Column(db.Integer)
+	followed_labid = db.Column(db.Integer,db.ForeignKey('labs.id', onupdate='CASCADE', ondelete='CASCADE'))
+
+
 
 db.create_all()
 
@@ -65,12 +217,6 @@ def is_logged_in(f):
 			return redirect(url_for('login'))
 	return wrap
 
-# route for labs page
-@app.route('/labs')
-@is_logged_in
-def labs():
-	lab = Labs.query.order_by(Labs.id.asc()).all()
-	return render_template('labs.html', lab=lab)
 
 # About
 @app.route('/about')
@@ -86,8 +232,22 @@ def articles():
 	if len(articles) > 0:
 		return render_template('articles.html', articles=articles)
 	else:
-		msg = 'No Articles Found'
-		return render_template('articles.html', msg=msg)
+		error = 'No Publications Found'
+		return render_template('articles.html', error=error)
+
+
+# route for labs page
+@app.route('/labs')
+@is_logged_in
+def labs():
+	lab = Labs.query.order_by(Labs.id.asc()).all()
+
+	if len(lab) > 0:
+		return render_template('labs.html', lab=lab)
+	else:
+		error = 'No Labs Found'
+		return render_template('labs.html', error=error)
+
 
 
 # Single Article
@@ -157,7 +317,9 @@ def login():
 				session['category'] = category
 
 				# flash('You are now logged in', 'success')
-				return redirect(url_for('home'))
+				papers = Publications.query.order_by(Publications.id.asc()).all()
+				authors = Publications_authors.query.order_by(Publications_authors.id.asc()).all()
+				return render_template('home.html',papers=papers,authors=authors)
 
 				# return redirect(url_for('dashboard'))
 			else:
@@ -188,7 +350,7 @@ def dashboard():
 	if len(articles) > 0:
 		return render_template('dashboard.html', articles=articles)
 	else:
-		error = 'No Articles Found'
+		error = 'No Publications Found'
 		return render_template('dashboard.html', error=error)
 	
 
@@ -202,7 +364,7 @@ def professor():
 	# return render_template('professor.html', articles=articles)
 	return render_template('professor.html')
 	# else:
-	# 	error = 'No Articles Found'
+	# 	error = 'No Publications Found'
 	# 	return render_template('dashboard.html', error=error)
 
 
@@ -229,7 +391,38 @@ def add_dummy_art():
 	db.session.commit()
 	
 
-# Add Article
+# Add Publication
+@app.route('/add_paper', methods=['GET', 'POST'])
+@is_logged_in
+def add_paper():
+	if request.method == "POST":
+		title = request.form['title']
+		author = request.form['author']
+		conference = request.form['conference']
+		date = request.form['date']
+		report_no = request.form['report_no']
+		pdf = request.form['pdf']
+		editor = request.form['editor']
+
+		# Create new paper
+		paper = Publications(title=title, conference=conference, date_published=date, report_no=report_no,likes=0, abstract=editor, pdf=pdf)
+		# paper = Publications()
+		db.session.add(paper)
+		db.session.commit()
+
+		print (paper.id)
+		paper_author = Publications_authors(id=paper.id,authors=author)
+		# Add user to database
+		
+		db.session.add(paper_author)
+		db.session.commit()
+
+	papers = Publications.query.order_by(Publications.date_published.desc()).all()
+	authors = Publications_authors.query.order_by(Publications_authors.id.asc()).all()
+	return render_template('home.html',papers=papers,authors=authors)
+
+
+#add paper
 @app.route('/add_article', methods=['GET', 'POST'])
 @is_logged_in
 def add_article():
@@ -244,13 +437,51 @@ def add_article():
 
 		# Add user to database
 		db.session.add(article)
-		add_dummy_art()
-		# db.session.commit()
+		# add_dummy_art()
+		db.session.commit()
 
 		# flash('Article Created', 'success')
 		return redirect(url_for('dashboard'))
 	
 	return render_template('add_article.html', form=form)
+
+
+# Search
+@app.route('/search', methods=['POST'])
+def search():
+	if request.method == 'POST':
+		# Get Form Fields
+		search_string = request.form['search_string']
+		category = request.form['category']
+
+		print (search_string)
+		print (category)
+		# user = Users.query.filter_by(username=username).first()
+
+		# if user is not None:
+		# 	# Get stored hash
+		# 	password = user.password
+
+		# 	# Compare Passwords
+		# 	if sha256_crypt.verify(password_candidate, password):
+		# 		# Passed
+		# 		session['logged_in'] = True
+		# 		session['username'] = username
+		# 		session['id'] = user.id
+		# 		session['category'] = category
+
+		# 		# flash('You are now logged in', 'success')
+		# 		return redirect(url_for('home'))
+
+		# 		# return redirect(url_for('dashboard'))
+		# 	else:
+		# 		error = 'Invalid login'
+		# 		return render_template('login.html', error=error)
+		# else:
+		# 	error = 'Username not found'
+		# 	return render_template('login.html', error=error)
+
+	return render_template('login.html')
 
 
 # # Edit Article

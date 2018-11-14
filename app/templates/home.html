@@ -19,14 +19,21 @@
 <br><br><br>
 <div id="Timeline" class="col s12">
     <ul class="collapsible popout">
+        {% for i in papers %}
         <li>
-            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
-            <div class="collapsible-body" align="justify">
-                <span>
-                    Inside data
-                </span>
-            </div>
+            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>{{i.title|safe}}</b></div>
+            {% for j in authors %}
+        
+                {% if i.id==j.id %}
+                    <div class="collapsible-body" align="justify">
+                        <span>
+                            {{j.authors}}
+                        </span>
+                    </div>
+                {% endif %}
+            {% endfor %}
         </li>
+        {% endfor %}
     </ul>
     <br>
         <!-- {% for lab in labs %}
@@ -81,32 +88,57 @@
             <a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span><b>{{lab.name}}</b></h6></a>
         {% endfor %} -->
 </div>
-<div id="Add_Research" class="col s12">
-    <ul class="collapsible popout">
-        <li>
-            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
-            <div class="collapsible-body" align="justify">
-                <span>
-                    Inside data
-                </span>
+<div id="Add_Research" class="col s12" style="padding-left: 1%; padding-right: 1%; overflow: auto;">
+    <form method="POST" action="{{url_for('add_paper', id=session.id)}}">
+    <div class="row">
+        <div class="col s6">
+            <div class="input-field">
+                <input name="title" id="title" type="text" class="validate">
+                <label for="title">Title</label>
             </div>
-        </li>
-    </ul>
-    <br>
+            <div class="input-field">
+                    <input name="author" id="author" type="text" class="validate">
+                    <label for="author">Author</label>
+                </div>
+            <div class="input-field">
+                    <input name="conference" id="conference" type="text" class="validate">
+                    <label for="conference">Conference</label>
+            </div>
+            <div class="input-field">
+                    <input name="date" id="date" type="text" class="datepicker">
+                    <label for="date">Date</label>
+            </div>
+            <div class="input-field">
+                    <input name="report_no" id="report_no" type="text" class="validate">
+                    <label for="report_no">Report No</label>
+            </div>
+            <div class="file-field input-field">
+                <div class="btn">
+                    <span>Pdf</span>
+                    <input type="file">
+                </div>
+                <div class="file-path-wrapper">
+                    <input name="pdf" class="file-path validate" type="text">
+                </div>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                    <i class="material-icons right">send</i>
+            </button>
+        </div>
+        <div class="col s6" style="padding-top:2%">
+            <label for="editor">Abstract</label>    
+            <textarea name="editor" id="editor" style="height:100%; margin-top:5%"></textarea>
+        </div>
+            
+    </div>
+    
+</form>
+       
+        
 </div>
 {% if session.id == "Professor" %}
 <div id="My_students" class="col s12">
-    <ul class="collapsible popout">
-        <li>
-            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
-            <div class="collapsible-body" align="justify">
-            <span>
-                Inside data
-            </span>
-            </div>
-        </li>
-    </ul>
-    <br>
+
 </div>
 {% endif %}
 <!-- {% if condition == "Professor" %}

@@ -42,14 +42,13 @@ html{
 main {
     height: auto;
     width: auto;
-    /* position: absolute; */
-    margin-left: 5%;
-    margin-right: 5%;
-    padding-left: 3%;
-    padding-right: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+    padding-left: 2%;
+    padding-right: 1%;
     background-color: #cfd8dc;
-    padding-top: 50px;
-    padding-bottom: 50px;
+    padding-top: 30px;
+    padding-bottom: 30px;
     overflow:auto;
 }
 
@@ -57,9 +56,11 @@ main {
     padding: 0;
  }
 
-::placeholder {
-    color: black;
-    opacity: 1; /* Firefox */
+input::placeholder {
+    /* color: black; */
+    /* opacity: 1; Firefox */
+    font-size: 1.2em;
+    font-style: italic;
 }
 
 .navbar-fixed
@@ -105,3 +106,24 @@ body{
 }
 
 /* ravi */
+
+label {
+    font: normal 25px Calibri !important;
+}
+
+span {
+    font: normal 25px Calibri !important;
+}
+
+input {
+    height: 54px;
+}
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+#hidden_category {
+    display: none;
+}

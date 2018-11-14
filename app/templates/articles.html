@@ -1,10 +1,18 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>Articles</h1>
-    <ul class="list-group">
+    <h2 align="center">Publications</h2>
+    <ul class="collapsible popout">
         {% for article in articles %}
-            <li class="list-group-item"><a href="article/{{article.id}}"> {{article.title}} </a></li>
+        <li>
+            <div class="row collapsible-header">
+                <div class="col l1 s1"><i class="material-icons more">arrow_drop_down</i></div>
+                <div class="col l4 s11"><b>Title : {{article.title}}</b></div>
+                <div class="col l4 s11"><b>Author : {{article.author}}</b></div>
+                <div class="col l3 s11"><b>Posted On : {{article.date_posted}}</b></div>
+            </div>
+            <div class="collapsible-body"><span style="text-align: justify">{{ article.body|safe}}<br><a href="article/{{article.id}}">Read More</a></div>
+        </li>
         {% endfor %}
     </ul>
 {% endblock %}
