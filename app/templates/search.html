@@ -1,0 +1,166 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    {% if students %}
+        <h5 align="center">Student(s) with name "{{search_string}}"</h5>
+        {% for s in students %}
+            <div class="row">
+                <div class="col m2 l3"></div>
+                <div class="col s12 m8 l6">
+                    <div class="card horizontal">
+                        <div class="card-image">
+                        <img src="{{ url_for('static', filename = s.fname + '.jpg' ) }}">
+                        </div>
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                <p><b><h6>Name: </b>{{s.name}}</h6></p>
+                                <p><b><h6>Roll no: </b>{{s.rollno}}</h6></p>
+                                <p><b><h6>Email Id: </b>{{s.email}}</h6></p>
+                                <p><b><h6>Stream: </b>{{s.stream}}</h6></p>
+                                <p><b><h6>Year of Join: </b>{{s.yearofjoin}}</h6></p>
+                                <p><button id="{{ s.rollno }}" class="follow" onclick="follow_student(this.id)" value="Follow" style="margin:0%;">Follow</button><b><span id="search_stud_follow_{{s.rollno}}" style="margin:3%">Dummy 124</span></p>
+                                {% if session.category == "Professor" %}
+                                    <p><button id="stud_{{ s.rollno }}" class="follow" onclick="add_student(this.id)" value='Add To "My Students"' style="margin:0%; margin-top:2%;">Add To "My Students"</button></p>
+                                {% endif %}
+                            </div>  
+                            <div class="card-action">
+                                <a href="/student/{{s.rollno}}">Visit Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% for i in num_studs %}
+        <script type="text/javascript">
+          set_search_following_studs('{{ i.followed_rollno }}','{{ i.num }}');
+        </script>
+      {% endfor %}
+        {% if session.category == "Professor" %}
+            {% for l in prof_stud %}
+            <script type="text/javascript">
+                check_add_stud('{{ l.rollno }}');
+            </script>
+        {% endfor %}
+            {% for l in following_stud %}
+                <script type="text/javascript">
+                    checkfollowing_prof_stud('{{ l.rollno }}');
+                </script>
+            {% endfor %}
+        {% endif %}
+        {% if session.category != "Professor" %}
+            {% for l in following_stud %}
+                <script type="text/javascript">
+                    checkfollowing_stud_stud('{{ l.followed_rollno }}');
+                </script>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    {% if professors %}
+        <h5 align="center">Professor(s) with name "{{search_string}}"</h5>
+        {% for p in professors %}
+            <div class="row">
+                <div class="col m2 l3"></div>
+                <div class="col s12 m8 l6">
+                    <div class="card horizontal">
+                        <div class="card-image">
+                        <img src="{{ url_for('static', filename = p.fname + '.jpg') }}">
+                        </div>
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                    <b><h6>Name: </b>{{p.name}}</h6>
+                                    <b><h6>Email Id: </b>{{p.email}}</h6>
+                                    <b><h6>Research Center: </b>{{p.research_center}}</h6>
+                                    <b><h6>Year of Join: </b>{{p.yearofjoin}}</h6>
+                                    <p><button id="{{ p.profid }}" class="follow" onclick="follow_professor(this.id)" value="Follow" style="margin:0%;">Follow</button><b><span id="search_prof_follow_{{p.profid}}" style="margin:3%"></span></p>
+                                    {% if session.category != "Professor" %}
+                                        <p><button id="prof_{{ p.profid }}" class="follow" onclick="add_professor(this.id)" value='Add To "My Guides"' style="margin:0%; margin-top:2%;">Add To "My Guides"</button></p>
+                                    {% endif %}
+                            </div>  
+                            <div class="card-action">
+                                <a href="/professor/{{p.profid}}">Visit Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% for i in num_profs %}
+        <script type="text/javascript">
+          set_search_following_profs('{{ i.followed_profid }}','{{ i.num }}');
+        </script>
+        {% endfor %}
+        {% if session.category == "Professor" %}
+            {% for l in following_prof %}
+                <script type="text/javascript">
+                    checkfollowing_prof_prof('{{ l.followed_profid }}');
+                </script>
+            {% endfor %}
+        {% endif %}
+        {% if session.category == "Student" %}
+            {% for l in prof_stud %}
+                <script type="text/javascript">
+                    check_add_prof('{{ l.profid }}');
+                </script>
+            {% endfor %}
+            {% for l in following_prof %}
+                <script type="text/javascript">
+                    checkfollowing_stud_prof('{{ l.profid }}');
+                </script>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    {% if labs %}
+        <h5 align="center">Lab(s) with name "{{search_string}}"</h5>
+        {% for l in labs %}
+            <div class="row">
+                <div class="col l1"></div>
+                <div class="col s12 12 l10">
+                    <div class="card horizontal">
+                        <div class="card-image">
+                        <img src="{{ url_for('static', filename = 'lab.png') }}">
+                        </div>
+                        <div class="card-stacked">
+                            <div class="card-content" align="justify">
+                                    <b><h6>Name: </b>{{l.name}}</h6>
+                                    <b><h6>Description: </b>{{l.description|safe}}</h6>
+                                    <p><button id="{{ l.id }}" class="follow" onclick="search_follow_lab(this.id)" value="Follow" style="margin:0%;">Follow</button><b><span id="search_lab_follow_{{l.id}}" style="margin:3%"></span></p>
+                            </div>  
+                            <div class="card-action">
+                                <a href="{{l.url}}" target="_blank">Visit Lab</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% for i in num_labs %}
+        <script type="text/javascript">
+          set_search_following_labs('{{ i.followed_labid }}','{{ i.num }}');
+        </script>
+      {% endfor %}
+        {% for l in following_labs %}
+            <script type="text/javascript">
+                checkfollowing('{{ l.labid }}');
+            </script>
+        {% endfor %}
+    {% endif %}
+    {% if publications %}
+        <h5 align="center">Publication(s) in "{{search_string}}"</h5>
+        <ul class="collapsible popout">
+            {% for p in publications %}
+            <li>
+                <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>{{p.title|safe}}</b><span class="new badge" data-badge-caption="">{{p.likes|safe}} Likes</span></div>
+                <div class="collapsible-body" align="justify">
+                    <b>Authors : </b>{{p.conference|safe}}<br>
+                    <b>Conference : </b>{{p.conference|safe}}<br>
+                    <b>Date : </b>{{p.date_published|safe}}<br>
+                    <b>Report No : </b>{{p.report_no|safe}}<br><br>
+                    <b>Abstract : </b>{{p.abstract|safe}}<br>
+                    <b>Full Paper : </b><a href="{{p.pdf}}" download>pdf</a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

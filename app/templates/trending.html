@@ -1,0 +1,136 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="navbar-fixed behind_container" style="margin-top:0.5%; z-index:1;">
+    <nav class="nav-extended blue darken-1">
+        <div class="nav-content">
+            <ul class="tabs tabs-fixed-width tab-demo">
+                    <li class="tab col s3"><a class="active" href="#Students"><b>Trending Students</b></a></li>
+                    <li class="tab col s3"><a href="#Professors"><b>Trending Professors</b></a></li>
+                    <li class="tab col s3"><a href="#Labs"><b>Trending Labs</b></a></li>
+                    <li class="tab col s3"><a href="#Publications"><b>Trending Publications</b></a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+    <div id="Students" class="col s12" style="overflow:auto; height: 100%;">        
+            {% for i in students %}
+            <div class="row" >
+                <div class="col m2 l3"></div>
+                <div class="col s12 m8 l6">
+                    <div class="card horizontal">
+                        {% for j in students_data %}
+                            {% if i.followed_rollno == j.rollno %}
+                                <div class="card-image" style="max-width: 180px;height: 180px;">
+                                    <img src="{{ url_for('static', filename = j.fname + '.jpg') }}">
+                                </div>
+                                <div class="card-stacked">
+                                    <div class="card-content">
+                                        <p><h5><strong>Name:</strong>          {{j.name}}</h5></p>
+                                        <p><h5><strong>Email:</strong>           {{j.email}}</h5></p>
+                                        <p><h5><strong>Year Of Joining:</strong> {{j.yearofjoin}}</h5></p>
+                                        <p><h5><strong>Followers:</strong>  {{i.num}}</h5></p>
+                                        <div class="card-action"> <a href="/student/{{j.rollno}}">{{j.name}}</a></div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}      
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <br><br><br><br>
+    <div id="Professors" class="col s12" style="overflow:auto;">        
+        {% for i in professors %}
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col m2 l3"></div>
+                <div class="col s12 m8 l6">
+                    <div class="card horizontal">
+                        {% for j in professors_data %}
+                            {% if i.followed_profid == j.profid %}
+                                <div class="card-image" style="max-width: 180px; height: 180px;">
+                                    <img src="{{ url_for('static', filename = j.fname + '.jpg') }}">
+                                </div>
+                                <div class="card-stacked">
+                                    <div class="card-content">
+                                        <p><h5><strong>Name:</strong>          {{j.name}}</h5></p>
+                                        <p><h5><strong>Email:</strong>           {{j.email}}</h5></p>
+                                        <p><h5><strong>Year Of Joining:</strong> {{j.yearofjoin}}</h5></p>
+                                        <p><h5><strong>Followers:</strong>  {{i.num}}</h5></p>
+                                        <div class="card-action"><a href="/professor/{{j.profid}}">{{j.name}}</a></div>  
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <br><br><br>
+    <div id="Labs" class="col s12" style="overflow:auto;">        
+        {% for i in labs %}
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col m2 l1"></div>
+                <div class="col s12 m8 l10">
+                    <div class="card horizontal">
+                        <div class="card-image" style="max-width: 180px; height: 180px;">
+                            <img src="{{ url_for('static', filename = 'lab.png') }}">
+                        </div>
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                {% for j in labs_data %}
+                                    {% if i.followed_labid == j.id %}
+                                        <p><h4><b><strong>Name:</b></strong>        {{j.name}}</p></h4>  
+                                        <p><h4><b><strong>Followers:</b></strong> {{i.num}}</p></h4>
+                                        <p><h4><b><strong>Description:</b></strong></h4>  {{j.description|safe}}</p>
+                                        <p><strong><div class="card-action"><a href="{{j.url}}">{{j.name}}</a></div></strong></p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <br><br><br>
+    <div id="Publications" class="col s12" style="overflow:auto;">        
+        {% for i in publications %}
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col m2 l2"></div>
+                <div class="col s12 m8 l8">
+                    <div class="card horizontal">
+                        <div class="card-image">
+                            <img src="{{ url_for('static', filename = 'publications.png') }}" style="max-width: 180px; height: 180px;">
+                        </div>
+                        <div class="card-stacked">
+                            <div class="card-content">
+                                {% for j in publications_data %}
+                                    {% if i.id == j.id %}
+                                        <p><h5><strong><b>Title:</strong></b>          {{j.title}}</h5></p>
+                                        <p><h5><strong><b>Likes:</strong></b>  {{j.likes}}</h5></p>
+                                        <p><h5><strong><b>Author:</strong></b>         {{j.author}}</h5></p>
+                                        <p><h5><strong><b>Conference:</strong></b>  {{i.conference}}</h5></p>
+                                        <p><h5><strong><b>Report Number:</strong></b>  {{j.report_no}}</h5></p>
+                                        <p><h5><strong><b>Date Published:</strong></b>  {{j.date_published}}</h5></p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

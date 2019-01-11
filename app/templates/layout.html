@@ -19,6 +19,9 @@
  
     <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="{{ url_for('static', filename = 'myscript.js') }}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     <script>
         $(document).ready(function(){
             $('ul.tabs').tabs({
@@ -27,7 +30,9 @@
             });
             $('.collapsible').collapsible();
             $('.datepicker').datepicker();
+            $('.carousel').css("height","70%");
         });
+        
         var options = {
             width: 400,
             height: 200,
@@ -55,13 +60,10 @@
 <body>
     {% include 'includes/_sidenav.html' %}
     {% include 'includes/_navbar.html' %}
-    <br><br>
-    {% include 'includes/_search_box.html' %}
-	<br>
-    <div class="container-fluid" style="padding:0%; height:auto;">
+    <!-- <div class="container-fluid" style="padding:0%; margin-top:0%; height:70%; position: relative;"> -->
         {% include 'includes/_messages.html' %}
         {% block body %}{% endblock %}
-    </div>
+    <!-- </div> -->
     <!-- {% include 'includes/_footer.html' %} -->
 
     <!-- Compiled and minified JavaScript -->

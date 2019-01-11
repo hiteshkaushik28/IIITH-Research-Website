@@ -3,16 +3,24 @@
 {% block body %}
     <h2 align="center">Publications</h2>
     <ul class="collapsible popout">
-        {% for article in articles %}
+        {% for i in papers %}
         <li>
-            <div class="row collapsible-header">
-                <div class="col l1 s1"><i class="material-icons more">arrow_drop_down</i></div>
-                <div class="col l4 s11"><b>Title : {{article.title}}</b></div>
-                <div class="col l4 s11"><b>Author : {{article.author}}</b></div>
-                <div class="col l3 s11"><b>Posted On : {{article.date_posted}}</b></div>
+            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>{{i.title|safe}}</b><span class="new badge" id="likes_{{i.id}}" data-badge-caption="">{{i.likes|safe}} Likes</span></div>
+            <div class="collapsible-body" align="justify">
+                <b>Authors: </b>{{i.author|safe}}<br>
+                <b>Conference : </b>{{i.conference|safe}}<br>
+                <b>Date : </b>{{i.date_published|safe}}<br>
+                <b>Report No : </b>{{i.report_no|safe}}<br><br>
+                <b>Abstract : </b>{{i.abstract|safe}}<br>
+                <b>Full paper : </b><a href="{{i.pdf}}" download>pdf</a><br>
+                <button id="{{ i.id }}" class="follow info" onclick="like_pub(this.id)" value="Like">Like</button>
             </div>
-            <div class="collapsible-body"><span style="text-align: justify">{{ article.body|safe}}<br><a href="article/{{article.id}}">Read More</a></div>
         </li>
+        {% endfor %}
+        {% for i in pub_likes %}
+            <script type="text/javascript">
+                check_like('{{ i.publicationid}}');
+            </script>
         {% endfor %}
     </ul>
 {% endblock %}

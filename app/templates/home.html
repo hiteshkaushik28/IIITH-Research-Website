@@ -3,85 +3,185 @@
 {% block body %}
 
 <!-- <h1>Student <small>Welcome {{session.username}}</small></h1> -->
-    
-<div class="navbar-fixed" style="position: fixed;">
-        <ul id="tabs-swipe-demo" class="tabs tabs-fixed-width tab-demo z-depth-5" style="position: fixed;"> 
-            <li class="tab col s3"><a class="active" href="#Timeline"><b>Timeline</b></a></li>
-            <li class="tab col s3"><a href="#My_Research"><b>My Research</b></a></li>
-            <li class="tab col s3"><a href="#Following"><b>Following</b></a></li>
-            <li class="tab col s3"><a href="#My_Labs"><b>My Labs</b></a></li>
-            <li class="tab col s3"><a href="#Add_Research"><b>Add Research</b></a></li>
-            {% if session.id == "Professor" %}
-            <li class="tab col s3"><a href="#My_students"><b>My Students</b></a></li>
-            {% endif %}
-        </ul>    
-</div>
-<br><br><br>
-<div id="Timeline" class="col s12">
-    <ul class="collapsible popout">
-        {% for i in papers %}
-        <li>
-            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>{{i.title|safe}}</b></div>
-            {% for j in authors %}
-        
-                {% if i.id==j.id %}
-                    <div class="collapsible-body" align="justify">
-                        <span>
-                            {{j.authors}}
-                        </span>
-                    </div>
+
+<div class="navbar-fixed behind_container" style="margin-top:0.5%; z-index:1;">
+    <nav class="nav-extended blue darken-1">
+        <div class="nav-content">
+            <ul class="tabs tabs-fixed-width tab-demo">
+                <li class="tab col s3"><a class="active" href="#Timeline"><b>Timeline</b></a></li>
+                <li class="tab col s3"><a href="#My_Research"><b>My Research</b></a></li>
+                <li class="tab col s3"><a href="#Following"><b>Following</b></a></li>
+                <li class="tab col s3"><a href="#My_Labs"><b>My Labs</b></a></li>
+                <li class="tab col s3"><a href="#Add_Research"><b>Add Research</b></a></li>
+                {% if session.category == "Professor" %}
+                    <li class="tab col s3"><a href="#My_students"><b>My Students</b></a></li>
+                {% else %}
+                    <li class="tab col s3"><a href="#My_guides"><b>Guides</b></a></li>
                 {% endif %}
-            {% endfor %}
-        </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div id="My_Research" class="col s12" style="overflow:auto;">
+    <ul class="collapsible popout">
+        {% for i in my_papers %}
+            <li>
+                <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>{{i.title|safe}}</b><span class="new badge" data-badge-caption="">{{i.likes|safe}} Likes</span></div>
+                <div class="collapsible-body" align="justify">
+                    
+                    Authors: {{i.author|safe}}<br>
+                    Conference: {{i.conference|safe}}<br>
+                    Date: {{i.date_published|safe}}<br>
+                    Report No: {{i.report_no|safe}}<br>
+                    Abstract: {{i.abstract|safe}}<br>
+                    Full paper: <a href="{{i.pdf}}" download>pdf</a>
+                </div>
+            </li>
         {% endfor %}
     </ul>
     <br>
-        <!-- {% for lab in labs %}
-            <a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span><b>{{lab.name}}</b></h6></a>
-        {% endfor %} -->
 </div>
-<div id="My_Research" class="col s12">
+<div id="Timeline" class="col s12" style="overflow:auto;">
     <ul class="collapsible popout">
-        <li>
-            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
-            <div class="collapsible-body" align="justify">
-                <span>
-                    Inside data
-                </span>
-            </div>
-        </li>
+        {% for i in following_papers %}
+            <li>
+                <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>{{i.title|safe}}</b><span class="new badge" id="likes_{{i.id}}" data-badge-caption="">{{i.likes|safe}} Likes</span></div>
+                <div class="collapsible-body" align="justify">
+                    Authors: {{i.author|safe}}<br>
+                    Conference: {{i.conference|safe}}<br>
+                    Date: {{i.date_published|safe}}<br>
+                    Report No: {{i.report_no|safe}}<br>
+                    Abstract: {{i.abstract|safe}}<br>
+                    Full paper: <a href="{{i.pdf}}" download>pdf</a><br>
+                    <button id="{{ i.id }}" class="follow info" onclick="like_pub(this.id)" value="Like">Like</button>
+                </div>
+            </li>
+            {% endfor %}
+            {% for i in pub_likes %}
+            <script type="text/javascript">
+                check_like('{{ i.publicationid}}');
+              </script>
+            {% endfor %}
     </ul>
     <br>
-        <!-- {% for lab in labs %}
-            <a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span><b>{{lab.name}}</b></h6></a>
-        {% endfor %} -->
 </div>
-<div id="Following" class="col s12">
-    <ul class="collapsible popout">
-        <li>
-            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
-            <div class="collapsible-body" align="justify">
-                <span>
-                    Inside data
-                </span>
+<div id="Following" class="col s12" style="overflow:auto;">
+    {% if profs %}
+        <h4 align="center">Professors</h4>
+        {% for i in profs %}
+            <div class="row">
+                <div class="col s12 m2 l4"></div>
+                <div class="col s12 m8 l4">
+                    <div class="card">
+                        <div class="card-image" align="center">
+                                <img src="{{ url_for('static', filename = i.fname + '.jpg') }}" style="height:180px; width: auto;">
+                            <!-- <span class="card-title">Card Title</span> -->
+                        </div>
+                        <div class="card-content">
+                            <p>
+                            <b><h6>Name: </b>{{i.name}}</h6>
+                            <b><h6>Email Id: </b>{{i.email}}</h6>
+                            <b><h6>Research Center: </b>{{i.research_center}}</h6>
+                            <b><h6>Year of Join: </b>{{i.yearofjoin}}</h6>
+                            <b><h6 id="prof_follow_{{i.profid}}">Followers: </b>124</h6>
+                            </p>
+                        </div>
+                        <div class="card-action" align="center">
+                            <a href="/professor/{{i.profid}}">Click here to see profile</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </li>
-    </ul>
-    <br>
-        <!-- {% for lab in labs %}
-            <a href="{{url_for('login')}}" class="collection-item z-depth-5" onclick="CheckSession()"><h6><span class="new badge" data-badge-caption="">{{lab.num_followers}} Followers</span><b>{{lab.name}}</b></h6></a>
-        {% endfor %} -->
+        {% endfor %}
+        {% for i in num_profs %}
+        <script type="text/javascript">
+            set_following_profs('{{ i.followed_profid }}','{{ i.num }}');
+        </script>
+        {% endfor %}
+    {% endif %}
+    {% if studs %}
+        <h4 align="center">Students</h4>
+        {% for i in studs %}
+            <div class="row">
+                <div class="col s12 m2 l4"></div>
+                    <div class="col s12 m8 l4">
+                        <div class="card">
+                            <div class="card-image" align="center">
+                                    <img src="{{ url_for('static', filename = i.fname + '.jpg') }}" style="height:180px; width: auto;">
+                                <!-- <span class="card-title">Card Title</span> -->
+                            </div>
+                        <div class="card-content">
+                            <p>
+                            <b><h6>Name: </b>{{i.name}}</h6>
+                            <b><h6>Roll no: </b>{{i.rollno}}</h6>
+                            <b><h6>Email Id: </b>{{i.email}}</h6>
+                            <b><h6>Stream: </b>{{i.stream}}</h6>
+                            <b><h6>Year of Join: </b>{{i.yearofjoin}}</h6>
+                            <b><h6 id="stud_follow_{{i.rollno}}">Followers: </b>124</h6>
+                            </p>
+                        </div>
+                        <div class="card-action" align="center">
+                        <a href="/student/{{i.rollno}}">Click here to see profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% for i in num_studs %}
+        <script type="text/javascript">
+            set_following_studs('{{ i.followed_rollno }}','{{ i.num }}');
+        </script>
+        {% endfor %}
+    {% endif %}
+    {% if labs %}
+        <h4 align="center">Labs</h4>
+        {% for i in labs %}
+            <div class="row">
+                <div class="col s12 m2 l3"></div>
+                    <div class="col s12 m8 l6">
+                        <div class="card">
+                        <div class="card-content" align="justify">
+                            <p>
+                            <b><h6>Name: </b>{{i.name}}</h6>
+                            <b><h6>Description: </b>{{i.description|safe}}</h6>
+                            <b><h6 id="lab_follow_{{i.id}}">Followers: </b>124</h6>
+                            </p>
+                        </div>
+                        <div class="card-action" align="center">
+                        <a href="{{i.url}}" target="_blank">Click here to see more info</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% for i in num_labs %}
+        <script type="text/javascript">
+            set_following_labs('{{ i.followed_labid }}','{{ i.num }}');
+        </script>
+        {% endfor %}
+    {% endif %}
 </div>
-<div id="My_Labs" class="col s12">
+<div id="My_Labs" class="col s12" style="overflow:auto;">
     <ul class="collapsible popout">
-        <li>
-            <div class="collapsible-header"><i class="material-icons more">arrow_right</i><b>Title</b></div>
-            <div class="collapsible-body" align="justify">
-                <span>
-                    Inside data
-                </span>
-            </div>
-        </li>
+        <ul class="collapsible popout">
+            {% for l in my_labs %}
+                <li>
+                    <div class="collapsible-header"><i class="material-icons more">arrow_drop_down</i><b>{{ l.name }}</b><span class="new badge" id='followers_{{ l.id }}' data-badge-caption="">{{l.num_followers|safe}} Followers</span></div>
+                    <div class="collapsible-body"><span>{{ l.description|safe }}<button type="button" class="follow info" style="background-color:#343a40; color: white;" onclick="window.open('{{ l.url }}')">More Info</button><button id="{{ l.id }}" class="follow" onclick="follow_lab(this.id)" value="Follow">Follow</button></span></div>
+                </li>
+            {% endfor %}
+            {% for i in num_lab %}
+                <script type="text/javascript">
+                set_following('{{ i.followed_labid }}','{{ i.num }}');
+                </script>
+            {% endfor %}
+            {% for j in following_labs %}
+                <script type="text/javascript">
+                checkfollowing('{{ j.labid }}');
+                </script>
+          {% endfor %}
+        </ul>
     </ul>
     <br>
         <!-- {% for lab in labs %}
@@ -91,59 +191,141 @@
 <div id="Add_Research" class="col s12" style="padding-left: 1%; padding-right: 1%; overflow: auto;">
     <form method="POST" action="{{url_for('add_paper', id=session.id)}}">
     <div class="row">
-        <div class="col s6">
+        <div class="col s12 m12 l7" style="padding-top:2%">
+            <label for="editor">Abstract</label>    
+            <textarea name="editor" id="editor" style="height:100%; margin-top:5%"></textarea>
+        </div>
+        <div class="col s12 m12 l5">
             <div class="input-field">
                 <input name="title" id="title" type="text" class="validate">
                 <label for="title">Title</label>
             </div>
             <div class="input-field">
-                    <input name="author" id="author" type="text" class="validate">
-                    <label for="author">Author</label>
-                </div>
-            <div class="input-field">
-                    <input name="conference" id="conference" type="text" class="validate">
-                    <label for="conference">Conference</label>
+                <input name="conference" id="conference" type="text" class="validate">
+                <label for="conference">Conference</label>
             </div>
             <div class="input-field">
-                    <input name="date" id="date" type="text" class="datepicker">
-                    <label for="date">Date</label>
+                <input name="date" id="date" type="text" class="datepicker">
+                <label for="date">Date</label>
             </div>
             <div class="input-field">
-                    <input name="report_no" id="report_no" type="text" class="validate">
-                    <label for="report_no">Report No</label>
+                <input name="report_no" id="report_no" type="text" class="validate">
+                <label for="report_no">Report No</label>
             </div>
+            <div class="input-field">
+                <input name="field_of_research" id="report_no" type="text" class="validate" disabled>
+                <label for="field_of_research">Field(s) of Research</label>
+            </div>
+            {% for r in all_research_fields %}
+                <p>
+                    <label>
+                        <input type="checkbox" name="field_of_research" value="{{ r }}"/>
+                        <span>{{ r }}</span>
+                    </label>
+                </p>
+            {% endfor %}
+            <!-- <p>
+                <label>
+                    <input type="checkbox" name="field_of_research" value="Computer Vision" />
+                    <span>Computer Vision</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input type="checkbox" name="field_of_research" value="Natural Language Processing" />
+                    <span>Natural Language Processing</span>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input type="checkbox" name="field_of_research" value="Machine Learning" />
+                    <span>Machine Learning</span>
+                </label>
+            </p> -->
             <div class="file-field input-field">
-                <div class="btn">
-                    <span>Pdf</span>
+                <div class="btn waves-effect waves-light blue darken-1">
+                    <span>Upload Document</span>
                     <input type="file">
                 </div>
                 <div class="file-path-wrapper">
                     <input name="pdf" class="file-path validate" type="text">
                 </div>
             </div>
-            <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+            <button class="btn waves-effect waves-light btn-large blue darken-1" type="submit" name="action">Submit
                     <i class="material-icons right">send</i>
             </button>
         </div>
-        <div class="col s6" style="padding-top:2%">
-            <label for="editor">Abstract</label>    
-            <textarea name="editor" id="editor" style="height:100%; margin-top:5%"></textarea>
-        </div>
-            
     </div>
-    
-</form>
-       
-        
+    </form>
 </div>
-{% if session.id == "Professor" %}
-<div id="My_students" class="col s12">
 
+{% if session.category == "Professor" %}
+<div id="My_students" class="col s12" style="overflow:auto;">
+    {% for i in my_student %}
+        <div class="row">
+            <div class="col s12 m2 l4"></div>
+                <div class="col s12 m8 l4">
+                    <div class="card">
+                        <div class="card-image" align="center">
+                                <img src="{{ url_for('static', filename = i.fname + '.jpg') }}" style="height:180px; width: auto;">
+                            <!-- <span class="card-title">Card Title</span> -->
+                        </div>
+                    <div class="card-content">
+                        <p>
+                        <b><h6>Name: </b>{{i.name}}</h6>
+                        <b><h6>Roll no: </b>{{i.rollno}}</h6>
+                        <b><h6>Email Id: </b>{{i.email}}</h6>
+                        <b><h6>Stream: </b>{{i.stream}}</h6>
+                        <b><h6>Year of Join: </b>{{i.yearofjoin}}</h6>
+                        <b><h6 id="mystud_follow_{{i.rollno}}">Followers: </b></h6>
+                        </p>
+                    </div>
+                    <div class="card-action" align="center">
+                      <a href="/student/{{i.rollno}}">Click here to see profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    {% for i in num_studs %}
+      <script type="text/javascript">
+        set_following_mystuds('{{ i.followed_rollno }}','{{ i.num }}');
+      </script>
+    {% endfor %}
 </div>
+{% else %}
+<div id="My_guides" class="col s12" style="overflow:auto;">
+        {% for i in my_student %}
+        <div class="row">
+            <div class="col s12 m2 l4"></div>
+            <div class="col s12 m8 l4">
+                <div class="card">
+                    <div class="card-image" align="center">
+                            <img src="{{ url_for('static', filename = i.fname + '.jpg') }}" style="height:180px; width: auto;">
+                        <!-- <span class="card-title">Card Title</span> -->
+                    </div>
+                    <div class="card-content">
+                        <p>
+                        <b><h6>Name: </b>{{i.name}}</h6>
+                        <b><h6>Email Id: </b>{{i.email}}</h6>
+                        <b><h6>Research Center: </b>{{i.research_center}}</h6>
+                        <b><h6>Year of Join: </b>{{i.yearofjoin}}</h6>
+                        <b><h6 id="myprof_follow_{{i.profid}}">Followers: </b>124</h6>
+                        </p>
+                    </div>
+                    <div class="card-action" align="center">
+                        <a href="/professor/{{i.profid}}">Click here to see profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% for i in num_profs %}
+            <script type="text/javascript">
+                set_following_myprofs('{{ i.followed_profid }}','{{ i.num }}');
+            </script>
+        {% endfor %}
+    </div>
 {% endif %}
-<!-- {% if condition == "Professor" %}
-    {% block content %}
-    <div>blah blah blah blah</div>
-    {% endblock content %}
-{% endif %}
-{% endblock %} -->
+
+{% endblock %}

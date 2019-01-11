@@ -5,9 +5,30 @@
   <ul class="collapsible popout">
     {% for l in lab %}
     <li>
-      <div class="collapsible-header"><i class="material-icons more">arrow_drop_down</i><b>{{ l.name }}</b></div>
-      <div class="collapsible-body"><span>{{ l.desription|safe }}<button type="button" class="btn btn-dark info" onclick="window.open('{{ l.url }}')">More Info</button></span></div>
+      <div class="collapsible-header"><i class="material-icons more">arrow_drop_down</i><b>{{ l.name }}</b><span class="new badge" id='followers_{{ l.id }}' data-badge-caption="">{{l.num_followers|safe}} Followers</span></div>
+      <div class="collapsible-body">
+	  	<span>{{ l.description|safe }}
+	  		<button type="button" class="follow info" style="background-color:#343a40; color: white;" onclick="window.open('{{ l.url }}')">More Info</button>
+      <button id="{{ l.id }}" class="follow" onclick="follow_lab(this.id)" value="Follow">Follow</button>
+      <button id="lab_{{ l.id }}" class="follow" onclick="add_lab(this.id)" value="Add To My Labs">Add To My Labs</button>
+		</span>
+	  </div>
     </li>
+    {% endfor %}
+    {% for i in num_lab %}
+      <script type="text/javascript">
+        set_following('{{ i.followed_labid }}','{{ i.num }}');
+      </script>
+    {% endfor %}
+    {% for j in following_labs %}
+      <script type="text/javascript">
+        checkfollowing('{{ j.labid }}');
+      </script>
+    {% endfor %}
+    {% for j in enrolled_labs %}
+      <script type="text/javascript">
+        check_add_lab('{{ j.labid }}');
+      </script>
     {% endfor %}
   </ul>
 {% endblock %}

@@ -1,29 +1,8 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <h1>Register</h1>
-    {% from "includes/_formhelpers.html" import render_field %}
-    <form method="POST" action="">
-        <div class="form-group">
-            {{render_field(form.name, class_="form-control")}}
-        </div>
-        <div class="form-group">
-            {{render_field(form.email, class_="form-control")}}
-        </div>
-        <div class="form-group">
-            {{render_field(form.username, class_="form-control")}}
-        </div>
-        <div class="form-group">
-            {{render_field(form.password, class_="form-control")}}
-        </div>
-        <div class="form-group">
-            {{render_field(form.confirm, class_="form-control")}}
-        </div>   
-        <p><input type="submit" class="btn btn-primary" value="Submit"></p> 
-    </form>
-
 <main>
-<div style="text-align: center; padding: 2%;font-family: Calibri;color: #607d8b">
+<div style="text-align: center; padding: 2%; height:5%; font-family: Calibri;color: #607d8b">
   <div class="section">
     <div class="row">
       <div class="col s12">
@@ -37,8 +16,8 @@
                   <div class="col s3"></div>
                   <div class="input-field col s6">
                     <i class="material-icons prefix">account_circle</i>
-                    <input name="username" type="text" class="validate" value={{request.form.username}}>
-                    <label class="active" for="username">Username</label>
+                    <input name="email" type="text" class="validate" value={{request.form.email}}>
+                    <label class="active" for="emailid">Email ID</label>
                   </div>
                   <div class="col s3"></div>
               </div>
@@ -53,16 +32,25 @@
               </div>
               <div class="row">
                   <div class="col s3"></div>
+                  <div class="input-field col s6">
+                    <i class="material-icons prefix">live_help</i>
+                    <input name="confirm_password" type="password" class="validate" value={{request.form.confirm_password}}>
+                    <label for="confirm_password">Confirm Password</label>
+                  </div>
+                  <div class="col s3"></div>
+              </div>
+              <div class="row">
+                  <div class="col s3"></div>
                   <div class="col s6">
                     <p>
                       <label>
-                        <input class="with-gap" name="category" type="radio" checked />
+                        <input class="with-gap" name="category" type="radio" value="Professor" checked />
                         <span>Professor</span>
                       </label>
                     </p>
                     <p>
                       <label>
-                        <input class="with-gap" name="category" type="radio" />
+                        <input class="with-gap" name="category" type="radio" value="Student"/>
                         <span>Student</span>
                       </label>
                     </p>

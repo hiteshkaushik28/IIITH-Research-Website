@@ -12,6 +12,7 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 from datetime import datetime
 from sqlalchemy_utils import EmailType
+from operator import attrgetter
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://///home/bhavidhingra/google-drive-iiith/Semester_#1/CSE505 : Scripting & Computer Environments/Projects/IIITH-Research-Website/database/iiith_research.db'
@@ -19,20 +20,24 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-class Articles(db.Model):
-	__tablename__ = 'articles'
+class Student_likes_Publications(db.Model):
+	__tablename__ = 'student_likes_publications'
+	tempid = db.Column(db.Integer, primary_key=True)
+	rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+	publicationid = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='CASCADE', ondelete='CASCADE'))
 
-	id = db.Column(db.Integer, primary_key=True)
-	title = db.Column(db.String(50))
-	author = db.Column(db.String(50))
-	body = db.Column(db.Text)
-	date_posted = db.Column(db.DateTime)
+class Professor_likes_Publications(db.Model):
+	__tablename__ = 'professor_likes_publications'
+	tempid = db.Column(db.Integer, primary_key=True)
+	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+	publicationid = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='CASCADE', ondelete='CASCADE'))
 
 class Publications(db.Model):
 	__tablename__ = 'publications'
 
 	id = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(100))
+	author = db.Column(db.String(30))
 	conference = db.Column(db.String(100))
 	report_no = db.Column(db.String(100))
 	abstract = db.Column(db.Text)
@@ -41,32 +46,13 @@ class Publications(db.Model):
 	pdf = db.Column(db.Text)
 
 
-class Publications_authors(db.Model):
-	__tablename__ = 'publications_authors'
-
-	temp_id = db.Column(db.Integer, primary_key=True)
-	id = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='cascade', ondelete = 'cascade'))
-	authors = db.Column(db.String(100))
-
-
-class Users(db.Model):
-	__tablename__ = 'users'
-
-	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(50))
-	email = db.Column(db.String(50))
-	username = db.Column(db.String(30))
-	password = db.Column(db.String(50))
-	register_date = db.Column(db.DateTime)
-
-
 class Labs(db.Model):
 	__tablename__ = 'labs'
 
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(50))
 	url = db.Column(db.String(100))
-	desription = db.Column(db.Text)
+	description = db.Column(db.Text)
 	num_followers = db.Column(db.Integer)
 
 
@@ -81,7 +67,7 @@ class Students(db.Model):
 	lname = db.Column(db.String(20))
 	email = db.Column(EmailType)
 	stream = db.Column(db.String(30))	
-	yearofjoin = db.Column(db.Date)
+	yearofjoin = db.Column(db.Integer)
 
 
 class Professors(db.Model):
@@ -94,8 +80,8 @@ class Professors(db.Model):
 	mname = db.Column(db.String(20))
 	lname = db.Column(db.String(20))
 	email = db.Column(EmailType)
-	department = db.Column(db.String(30))	
-	yearofjoin = db.Column(db.Date)
+	research_center = db.Column(db.String(30))	
+	yearofjoin = db.Column(db.Integer)
 
 class Student_following_Students(db.Model):
 	__tablename__ = 'student_following_students'
@@ -149,6 +135,13 @@ class Professor_enrolledin_Labs(db.Model):
 	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
 	labid = db.Column(db.Integer,db.ForeignKey('labs.id', onupdate='CASCADE', ondelete='CASCADE'))
 
+class Student_enrolledin_Labs(db.Model):
+	__tablename__ = 'student_enrolledin_labs'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+	labid = db.Column(db.Integer,db.ForeignKey('labs.id', onupdate='CASCADE', ondelete='CASCADE'))
+
 class Student_owns_Publications(db.Model):
 	__tablename__ = 'student_owns_publications'
 	tempid = db.Column(db.Integer, primary_key=True)
@@ -159,12 +152,6 @@ class Professor_owns_Publications(db.Model):
 	__tablename__ = 'professor_owns_publications'
 	tempid = db.Column(db.Integer, primary_key=True)
 	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
-	publicationid = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='CASCADE', ondelete='CASCADE'))
-
-class Lab_owns_Publications(db.Model):
-	__tablename__ = 'lab_owns_publications'
-	tempid = db.Column(db.Integer, primary_key=True)
-	labid = db.Column(db.Integer,db.ForeignKey('labs.id', onupdate='CASCADE', ondelete='CASCADE'))
 	publicationid = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='CASCADE', ondelete='CASCADE'))
 
 
@@ -183,7 +170,6 @@ class Num_following_Professor(db.Model):
 	num = db.Column(db.Integer)
 	followed_profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
 
-
 class Num_following_Lab(db.Model):
 	__tablename__ = 'num_following_lab'
 
@@ -191,9 +177,74 @@ class Num_following_Lab(db.Model):
 	num = db.Column(db.Integer)
 	followed_labid = db.Column(db.Integer,db.ForeignKey('labs.id', onupdate='CASCADE', ondelete='CASCADE'))
 
+class Publication_in_fields(db.Model):
+	__tablename__ = 'publication_in_fields'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	publicationid = db.Column(db.Integer,db.ForeignKey('publications.id', onupdate='CASCADE', ondelete='CASCADE'))
+	field = db.Column(db.String(50))
+
+class Professor_in_fields(db.Model):
+	__tablename__ = 'professor_in_fields'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
+	field = db.Column(db.String(50))
+
+class Student_in_fields(db.Model):
+	__tablename__ = 'student_in_fields'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+	field = db.Column(db.String(50))
+
+class Student_under_Professor(db.Model):
+	__tablename__ = 'student_under_professor'
+
+	tempid = db.Column(db.Integer, primary_key=True)
+	rollno = db.Column(db.Integer,db.ForeignKey('students.rollno', onupdate='CASCADE', ondelete='CASCADE'))
+	profid = db.Column(db.Integer,db.ForeignKey('professors.profid', onupdate='CASCADE', ondelete='CASCADE'))
 
 
 db.create_all()
+
+
+all_research_fields = ['Natural Language Processing','Machine Learning','Machine Translation','Computer vision','Pattern recognition', 'Robotic Vision','System and network security','Cryptography','Biometrics','Speech Recognition']
+
+
+def following(category, id):
+	following_papers = []
+	if category == "Professor":
+		Following_prof_ids = Professor_following_Professors.query.filter_by(profid=id).all()
+		Following_stud_ids = Professor_following_Students.query.filter_by(profid=id).all()
+
+		for prof in Following_prof_ids:
+			prof_papers_ids = Professor_owns_Publications.query.filter_by(profid=prof.followed_profid).order_by(Professor_owns_Publications.publicationid.desc()).limit(4).all()
+			for paper in prof_papers_ids:
+				following_papers.append(Publications.query.filter_by(id=paper.publicationid).first())
+		
+		for stud in Following_stud_ids:
+			stud_papers_ids = Student_owns_Publications.query.filter_by(rollno=stud.rollno).order_by(Student_owns_Publications.publicationid.desc()).limit(4).all()
+			for paper in stud_papers_ids:
+				following_papers.append(Publications.query.filter_by(id=paper.publicationid).first())
+	else:
+		Following_prof_ids = Student_following_Professors.query.filter_by(rollno=id).all()
+		Following_stud_ids = Student_following_Students.query.filter_by(rollno=id).all()
+
+		for prof in Following_prof_ids:
+			prof_papers_ids = Professor_owns_Publications.query.filter_by(profid=prof.profid).order_by(Professor_owns_Publications.publicationid.desc()).limit(4).all()
+			for paper in prof_papers_ids:
+				following_papers.append(Publications.query.filter_by(id=paper.publicationid).first())
+		
+		for stud in Following_stud_ids:
+			stud_papers_ids = Student_owns_Publications.query.filter_by(rollno=stud.followed_rollno).order_by(Student_owns_Publications.publicationid.desc()).limit(4).all()
+			for paper in stud_papers_ids:
+				following_papers.append(Publications.query.filter_by(id=paper.publicationid).first())
+	
+	following_papers.sort(key=lambda r: r.date_published,reverse=True)
+	# following_papers = sorted(following_papers, key=attrgetter('person.birthdate'))
+
+	return following_papers
 
 # class Professor(db.Model):
 # 	id
@@ -202,9 +253,13 @@ db.create_all()
 @app.route('/')
 @app.route('/index')
 def index():
-	# add_dummy()
+	if 'logged_in' in session:
+		return redirect(url_for('home'))
+
 	labs = Labs.query.order_by(Labs.id.asc()).all()
-	return render_template('index.html',labs=labs)
+	papers = Publications.query.order_by(Publications.likes.desc()).all()
+	num_lab = Num_following_Lab.query.all()
+	return render_template('index.html',labs=labs, papers=papers,num_lab=num_lab)
 
 # Check if user logged in
 def is_logged_in(f):
@@ -218,22 +273,30 @@ def is_logged_in(f):
 	return wrap
 
 
-# About
-@app.route('/about')
-def about():
-	return render_template('about.html')
-
-
 # Articles
 @app.route('/articles')
 def articles():
-	articles = Articles.query.order_by(Articles.date_posted.desc()).all()
+	papers = Publications.query.order_by(Publications.likes.desc()).all()
+	# authors = Publications_authors.query.order_by(Publications_authors.id.desc()).all()
 
-	if len(articles) > 0:
-		return render_template('articles.html', articles=articles)
+	my_research_fields = []
+
+	if session['category'] == "Professor":
+		pub_likes = Professor_likes_Publications.query.filter_by(profid=session['prof_id']).all()
+		my_research_fields = Professor_in_fields.query.filter_by(profid=session['prof_id']).all()
+	else:
+		pub_likes = Student_likes_Publications.query.filter_by(rollno=session['rollno']).all()
+		my_research_fields = Student_in_fields.query.filter_by(rollno=session['rollno']).all()
+
+	research_fields = []
+	for i in my_research_fields:
+		research_fields.append(str(i.field))
+
+	if len(papers) > 0:
+		return render_template('articles.html', papers=papers,pub_likes=pub_likes, my_research_fields=research_fields, all_research_fields=all_research_fields)
 	else:
 		error = 'No Publications Found'
-		return render_template('articles.html', error=error)
+		return render_template('articles.html', error=error, my_research_fields=research_fields, all_research_fields=all_research_fields)
 
 
 # route for labs page
@@ -241,21 +304,32 @@ def articles():
 @is_logged_in
 def labs():
 	lab = Labs.query.order_by(Labs.id.asc()).all()
+	following_labs = None
+	enrolled_labs = None
+	my_research_fields = []
+	if session['category'] == "Professor":
+		following_labs = Professor_following_Labs.query.filter_by(profid=session['prof_id']).all()
+		my_research_fields = Professor_in_fields.query.filter_by(profid=session['prof_id']).all()
+	else:
+		following_labs = Student_following_Labs.query.filter_by(rollno=session['rollno']).all()
+		my_research_fields = Student_in_fields.query.filter_by(rollno=session['rollno']).all()
 
+	research_fields = []
+	for i in my_research_fields:
+		research_fields.append(str(i.field))
+
+	if session['category'] == "Professor":
+		enrolled_labs = Professor_enrolledin_Labs.query.filter_by(profid=session['prof_id']).all()
+	else:
+		enrolled_labs = Student_enrolledin_Labs.query.filter_by(rollno=session['rollno']).all()
+
+	num_lab = Num_following_Lab.query.all()
+	print(following_labs)
 	if len(lab) > 0:
-		return render_template('labs.html', lab=lab)
+		return render_template('labs.html', lab=lab,following_labs=following_labs,num_lab=num_lab, enrolled_labs=enrolled_labs, my_research_fields=research_fields, all_research_fields=all_research_fields)
 	else:
 		error = 'No Labs Found'
-		return render_template('labs.html', error=error)
-
-
-
-# Single Article
-@app.route('/article/<string:id>')
-def article(id):
-	# Get article using 'id'
-	article = Articles.query.get(id)
-	return render_template('article.html', article=article)
+		return render_template('labs.html', error=error, my_research_fields=research_fields, all_research_fields=all_research_fields)
 
 
 # Register Form Class
@@ -273,60 +347,101 @@ class RegisterForm(Form):
 # User Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-	form = RegisterForm(request.form)
-	if request.method == 'POST' and form.validate():
-		name = form.name.data
-		email = form.email.data
-		username = form.username.data
-		password = sha256_crypt.encrypt(str(form.password.data))
+	# form = RegisterForm(request.form)
+	if request.method == 'POST':
+		# name = form.name.data
+		email = request.form['email']
+		# username = form.username.data
+		category = request.form['category']
 
-		# Create new user
-		user = Users(name=name, email=email, username=username, password=password, register_date=datetime.now())
+		print (str(request.form['password']))
+		print (str(request.form['confirm_password']))
 
-		# Add user to database
-		db.session.add(user)
+		# check entered passwords
+		password = sha256_crypt.encrypt(request.form['password'])
+		# password_candidate = request.form['password']
+		confirm_password = request.form['confirm_password']
+
+		user=None
+		if category == "Professor":
+			user = Professors.query.filter_by(email=email).first()
+		else:
+			user = Students.query.filter_by(email=email).first()
+
+		if user is None:
+			flash('Email Id doesn\'t exist!!', 'danger')
+			return redirect(url_for('register'))
+
+		if not sha256_crypt.verify(confirm_password, password):
+			flash('Passwords do not match!!', 'danger')
+			return redirect(url_for('register'))
+
+		user.password = password
 		db.session.commit()
 
-		# flash('You are now registered and can log in', 'success')
+		flash('You are now registered and can log in', 'success')
 		return redirect(url_for('register'))
 
-	return render_template('register.html', form=form)
+	return render_template('register.html')
 
 
 # User login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+	if 'logged_in' in session:
+		return redirect(url_for('home'))
+
 	if request.method == 'POST':
 		# Get Form Fields
-		username = request.form['username']
+		emailid = request.form['emailid']
 		password_candidate = request.form['password']
 		category = request.form['category']
 
-		user = Users.query.filter_by(username=username).first()
+		prof=None
+		student=None
+		if category == "Professor":
+			prof = Professors.query.filter_by(email=emailid).first()
 
-		if user is not None:
-			# Get stored hash
-			password = user.password
+			if prof is None:
+				error = 'Entry not found'
+				return render_template('login.html', error=error)
+
+			password = prof.password
+			name = prof.name
+			fname = prof.fname
+		else:
+			student = Students.query.filter_by(email=emailid).first()
+
+			if student is None:
+				error = 'Entry not found'
+				return render_template('login.html', error=error)
+
+			password = student.password
+			name = student.name
+			fname = student.fname
+
+		if prof is not None or student is not None:
 
 			# Compare Passwords
 			if sha256_crypt.verify(password_candidate, password):
 				# Passed
 				session['logged_in'] = True
-				session['username'] = username
-				session['id'] = user.id
+				session['emailid'] = emailid
+				if category == "Professor":
+					session['prof_id'] = prof.profid
+				else:
+					session['rollno'] = student.rollno
 				session['category'] = category
+				session['name'] = name
+				session['fname'] = fname
+				session['profile_img'] = fname + ".jpg"
 
-				# flash('You are now logged in', 'success')
-				papers = Publications.query.order_by(Publications.id.asc()).all()
-				authors = Publications_authors.query.order_by(Publications_authors.id.asc()).all()
-				return render_template('home.html',papers=papers,authors=authors)
-
-				# return redirect(url_for('dashboard'))
+				return redirect(url_for('home'))
 			else:
 				error = 'Invalid login'
 				return render_template('login.html', error=error)
 		else:
-			error = 'Username not found'
+			error = 'Entry not found'
 			return render_template('login.html', error=error)
 
 	return render_template('login.html')
@@ -337,58 +452,149 @@ def login():
 @is_logged_in
 def logout():
 	session.clear()
-	# flash('You are now logged out', 'success')
+	flash('You are now logged out', 'success')
 	return redirect(url_for('index'))
 
 
-# Dashboard
-@app.route('/dashboard')
+# Trending
+@app.route('/trending')
 @is_logged_in
-def dashboard():
-	articles = Articles.query.all()
+def trending():
+	students_data = []
+	professors_data = []
+	labs_data = []
+	publications_data = []
+	students = Num_following_Student.query.order_by(Num_following_Student.num.desc()).limit(5).all()
+	professors = Num_following_Professor.query.order_by(Num_following_Professor.num.desc()).limit(5).all()
+	labs = Num_following_Lab.query.order_by(Num_following_Lab.num.desc()).limit(5).all()
+	publications = Publications.query.order_by(Publications.likes.desc()).limit(5).all()
+	for i in students:
+		students_data.append(Students.query.filter_by(rollno=i.followed_rollno).first())
+	for j in professors:
+		professors_data.append(Professors.query.filter_by(profid=j.followed_profid).first())
+	for k in labs:
+		labs_data.append(Labs.query.filter_by(id=k.followed_labid).first())
+	for l in publications:
+		publications_data.append(Publications.query.filter_by(id=l.id).first())
 
-	if len(articles) > 0:
-		return render_template('dashboard.html', articles=articles)
+	my_research_fields = []
+	if session['category'] == "Professor":
+		my_research_fields = Professor_in_fields.query.filter_by(profid=session['prof_id']).all()
 	else:
-		error = 'No Publications Found'
-		return render_template('dashboard.html', error=error)
-	
+		my_research_fields = Student_in_fields.query.filter_by(rollno=session['rollno']).all()
+
+	research_fields = []
+	for i in my_research_fields:
+		research_fields.append(str(i.field))
+
+	return render_template('trending.html',students=students,students_data=students_data,professors=professors,professors_data=professors_data,labs = labs,labs_data = labs_data,publications=publications,publications_data=publications_data, my_research_fields=research_fields, all_research_fields=all_research_fields)
+
+
 
 # Professor
 @app.route('/professor')
 @is_logged_in
 def professor():
-	# articles = Articles.query.all()
-
-	# if len(articles) > 0:
-	# return render_template('professor.html', articles=articles)
 	return render_template('professor.html')
-	# else:
-	# 	error = 'No Publications Found'
-	# 	return render_template('dashboard.html', error=error)
 
 
 # Student
 @app.route('/home')
 @is_logged_in
 def home():
-	return render_template('home.html')
+	papers = Publications.query.order_by(Publications.id.asc()).all()
+	my_papers = []
+	my_labs = []
+	my_research_fields = []
+	following_papers=[]
+	pub_likes=[]
+	if session['category'] == "Professor":
+		own_paper_ids = Professor_owns_Publications.query.filter_by(profid=session['prof_id']).all()
+		for paper in own_paper_ids:
+			my_papers.append(Publications.query.filter_by(id=paper.publicationid).first())
+		
+		own_labs_ids = Professor_enrolledin_Labs.query.filter_by(profid=session['prof_id']).all()
+		for lab in own_labs_ids:
+			my_labs.append(Labs.query.filter_by(id=lab.labid).first())
+
+		my_research_fields = Professor_in_fields.query.filter_by(profid=session['prof_id']).all()
+		following_papers=following("Professor", session['prof_id'])
+		pub_likes = Professor_likes_Publications.query.filter_by(profid=session['prof_id']).all()
+	else:
+		own_paper_ids = Student_owns_Publications.query.filter_by(rollno=session['rollno']).all()
+		for paper in own_paper_ids:
+			my_papers.append(Publications.query.filter_by(id=paper.publicationid).first())
+
+		own_labs_ids = Student_enrolledin_Labs.query.filter_by(rollno=session['rollno']).all()
+		for lab in own_labs_ids:
+			my_labs.append(Labs.query.filter_by(id=lab.labid).first())
+
+		my_research_fields = Student_in_fields.query.filter_by(rollno=session['rollno']).all()
+		following_papers=following("Student", session['rollno'])
+		pub_likes = Student_likes_Publications.query.filter_by(rollno=session['rollno']).all()
+
+	# print(my_research_fields)
+	research_fields = []
+	for i in my_research_fields:
+		research_fields.append(str(i.field))
+
+	profs = []
+	studs = []
+	labs = []
+	num_labs = []
+	num_profs = []
+	num_studs = []
+	if session['category'] == "Professor":
+		follow_prof = Professor_following_Professors.query.filter_by(profid=session['prof_id']).all()
+		follow_stud = Professor_following_Students.query.filter_by(profid=session['prof_id']).all()
+		follow_lab = Professor_following_Labs.query.filter_by(profid=session['prof_id']).all()
+
+		for i in follow_prof:
+			profs.append(Professors.query.filter_by(profid=i.followed_profid).first())
+		for i in follow_stud:
+			studs.append(Students.query.filter_by(rollno=i.rollno).first())
+		for i in follow_lab:
+			labs.append(Labs.query.filter_by(id=i.labid).first())
+	else:
+		follow_prof = Student_following_Professors.query.filter_by(rollno=session['rollno']).all()
+		follow_stud = Student_following_Students.query.filter_by(rollno=session['rollno']).all()
+		follow_lab = Student_following_Labs.query.filter_by(rollno=session['rollno']).all()
+
+		for i in follow_prof:
+			profs.append(Professors.query.filter_by(profid=i.profid).first())
+		for i in follow_stud:
+			studs.append(Students.query.filter_by(rollno=i.followed_rollno).first())
+		for i in follow_lab:
+			labs.append(Labs.query.filter_by(id=i.labid).first())
+
+	num_labs = Num_following_Lab.query.all()
+	num_studs = Num_following_Student.query.all()
+	num_profs = Num_following_Professor.query.all()
+	
+	following_labs = None
+	if session['category'] == "Professor":
+		following_labs = Professor_following_Labs.query.filter_by(profid=session['prof_id']).all()
+	else:
+		following_labs = Student_following_Labs.query.filter_by(rollno=session['rollno']).all()
+	num_lab = Num_following_Lab.query.all()
+
+	my_student = []
+	if session['category'] == "Professor":
+		my_student_id = Student_under_Professor.query.filter_by(profid=session['prof_id']).all()
+		for i in my_student_id:
+			my_student.append(Students.query.filter_by(rollno=i.rollno).first())
+	else:
+		my_student_id = Student_under_Professor.query.filter_by(rollno=session['rollno']).all()
+		for i in my_student_id:
+			my_student.append(Professors.query.filter_by(profid=i.profid).first())
+
+	return render_template('home.html', papers=papers, my_papers=my_papers, my_labs=my_labs,following_papers=following_papers,pub_likes=pub_likes, following_labs=following_labs, num_lab=num_lab,profs=profs,studs=studs,labs=labs,num_labs=num_labs,num_profs=num_profs,num_studs=num_studs,my_student=my_student, my_research_fields=research_fields, all_research_fields=all_research_fields)
 
 
 # Article Form Class
 class ArticleForm(Form):
 	title = StringField('Title', [validators.Length(min=1, max=200)])
 	body = TextAreaField('Body', [validators.Length(min=30)])
-
-# add dummy data function	
-def add_dummy_art():
-	name = 'art_'
-	data="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-	for i in range (20):
-		name +=str(i) 
-		art = Articles(title=name, author=str(i),body=data,date_posted=datetime.now())
-		db.session.add(art)	
-	db.session.commit()
 	
 
 # Add Publication
@@ -397,53 +603,199 @@ def add_dummy_art():
 def add_paper():
 	if request.method == "POST":
 		title = request.form['title']
-		author = request.form['author']
+		# author = request.form['author']
+		author = session['name']
 		conference = request.form['conference']
 		date = request.form['date']
 		report_no = request.form['report_no']
 		pdf = request.form['pdf']
 		editor = request.form['editor']
+		research_fields = request.form.getlist('field_of_research')
 
 		# Create new paper
-		paper = Publications(title=title, conference=conference, date_published=date, report_no=report_no,likes=0, abstract=editor, pdf=pdf)
-		# paper = Publications()
+		paper = Publications(title=title, author=author, conference=conference, date_published=date, report_no=report_no,likes=0, abstract=editor, pdf=pdf)
 		db.session.add(paper)
 		db.session.commit()
 
-		print (paper.id)
-		paper_author = Publications_authors(id=paper.id,authors=author)
 		# Add user to database
-		
-		db.session.add(paper_author)
+		if session['category'] == "Professor":
+			prof_pub = Professor_owns_Publications(profid=session['prof_id'],publicationid=paper.id)
+			db.session.add(prof_pub)
+		else:
+			stud_pub = Student_owns_Publications(rollno=session['rollno'],publicationid=paper.id)
+			db.session.add(stud_pub)
+
 		db.session.commit()
 
-	papers = Publications.query.order_by(Publications.date_published.desc()).all()
-	authors = Publications_authors.query.order_by(Publications_authors.id.asc()).all()
-	return render_template('home.html',papers=papers,authors=authors)
+		for fld in research_fields:
+			entry = Publication_in_fields(publicationid=paper.id, field=fld)
+			db.session.add(entry)
+			db.session.commit()
+
+	return redirect(url_for('home'))
 
 
-#add paper
-@app.route('/add_article', methods=['GET', 'POST'])
+@app.route('/add_research_fields', methods=['GET', 'POST'])
 @is_logged_in
-def add_article():
-	form = ArticleForm(request.form)
-	if request.method == 'POST' and form.validate():
-		title = form.title.data
-		body = form.body.data
-		author = session['username']
+def add_research_fields():
+	if request.method == "POST":
+		if session['category'] == "Professor":
+			entries = Professor_in_fields.query.filter_by(profid = session['prof_id']).all()
+			for e in entries:
+				db.session.delete(e)
+				db.session.commit()
+		else:
+			entries = Student_in_fields.query.filter_by(rollno = session['rollno']).all()
+			for e in entries:
+				db.session.delete(e)
+				db.session.commit()
 
-		# Create new user
-		article = Articles(title=title, author=author, body=body, date_posted=datetime.now())
+		research_fields = request.form.getlist('field_of_research')
 
-		# Add user to database
-		db.session.add(article)
-		# add_dummy_art()
-		db.session.commit()
+		print (research_fields)
+		entry = None
+		for f in research_fields:
+			if session['category'] == "Professor":
+				entry = Professor_in_fields(profid=session['prof_id'], field=f)
+			else:
+				entry = Student_in_fields(rollno=session['rollno'], field=f)
+			db.session.add(entry)
+			db.session.commit()		
 
-		# flash('Article Created', 'success')
-		return redirect(url_for('dashboard'))
+	return redirect(url_for('home'))
+
+
+@app.route('/professor/<string:id>')
+@is_logged_in
+def search_prof(id):
+	prof = Professors.query.filter_by(profid=id).first()
+	papers = Publications.query.order_by(Publications.id.asc()).all()
+	# authors = Publications_authors.query.order_by(Publications_authors.id.asc()).all()
+	my_papers = []
+	my_labs = []
+	own_paper_ids = Professor_owns_Publications.query.filter_by(profid=id).all()
+	for paper in own_paper_ids:
+		my_papers.append(Publications.query.filter_by(id=paper.publicationid).first())
 	
-	return render_template('add_article.html', form=form)
+	own_labs_ids = Professor_enrolledin_Labs.query.filter_by(profid=id).all()
+	for lab in own_labs_ids:
+		my_labs.append(Labs.query.filter_by(id=lab.labid).first())
+
+	print(my_labs)
+
+	following_papers=following("Professor", id)
+	pub_likes = Professor_likes_Publications.query.filter_by(profid=id).all()
+
+	my_research_fields = []
+	if session['category'] == "Professor":
+		my_research_fields = Professor_in_fields.query.filter_by(profid=session['prof_id']).all()
+	else:
+		my_research_fields = Student_in_fields.query.filter_by(rollno=session['rollno']).all()
+
+	research_fields = []
+	for i in my_research_fields:
+		research_fields.append(str(i.field))
+
+	profs = []
+	studs = []
+	labs = []
+	num_labs = []
+	num_profs = []
+	num_studs = []
+	follow_prof = Professor_following_Professors.query.filter_by(profid=id).all()
+	follow_stud = Professor_following_Students.query.filter_by(profid=id).all()
+	follow_lab = Professor_following_Labs.query.filter_by(profid=id).all()
+
+	for i in follow_prof:
+		profs.append(Professors.query.filter_by(profid=i.followed_profid).first())
+	for i in follow_stud:
+		studs.append(Students.query.filter_by(rollno=i.rollno).first())
+	for i in follow_lab:
+		labs.append(Labs.query.filter_by(id=i.labid).first())
+
+	num_labs = Num_following_Lab.query.all()
+	num_studs = Num_following_Student.query.all()
+	num_profs = Num_following_Professor.query.all()
+	
+	following_labs = None
+	following_labs = Professor_following_Labs.query.filter_by(profid=id).all()
+
+	num_lab = Num_following_Lab.query.all()
+
+	my_student = []
+	my_student_id = Student_under_Professor.query.filter_by(profid=id).all()
+	for i in my_student_id:
+		my_student.append(Students.query.filter_by(rollno=i.rollno).first())
+
+	return render_template('professor.html', prof=prof, papers=papers, my_papers=my_papers, my_labs=my_labs,following_papers=following_papers,pub_likes=pub_likes, following_labs=following_labs, num_lab=num_lab,profs=profs,studs=studs,labs=labs,num_labs=num_labs,num_profs=num_profs,num_studs=num_studs,my_student=my_student,my_research_fields=research_fields, all_research_fields=all_research_fields)
+
+
+@app.route('/student/<string:rollno>')
+@is_logged_in
+def search_stud(rollno):
+	student = Students.query.filter_by(rollno=rollno).first()
+	papers = Publications.query.order_by(Publications.id.asc()).all()
+	# authors = Publications_authors.query.order_by(Publications_authors.id.asc()).all()
+	my_papers = []
+	my_labs = []
+	own_paper_ids = Student_owns_Publications.query.filter_by(rollno=rollno).all()
+	for paper in own_paper_ids:
+		my_papers.append(Publications.query.filter_by(id=paper.publicationid).first())
+
+	own_labs_ids = Student_enrolledin_Labs.query.filter_by(rollno=rollno).all()
+	for lab in own_labs_ids:
+		my_labs.append(Labs.query.filter_by(id=lab.labid).first())
+	
+	following_papers=following("Student", rollno)
+	pub_likes = Student_likes_Publications.query.filter_by(rollno=rollno).all()
+
+	my_research_fields = []
+	if session['category'] == "Professor":
+		my_research_fields = Professor_in_fields.query.filter_by(profid=session['prof_id']).all()
+	else:
+		my_research_fields = Student_in_fields.query.filter_by(rollno=session['rollno']).all()
+
+	research_fields = []
+	for i in my_research_fields:
+		research_fields.append(str(i.field))
+
+	profs = []
+	studs = []
+	labs = []
+	num_labs = []
+	num_profs = []
+	num_studs = []
+
+	follow_prof = Student_following_Professors.query.filter_by(rollno=rollno).all()
+	follow_stud = Student_following_Students.query.filter_by(rollno=rollno).all()
+	follow_lab = Student_following_Labs.query.filter_by(rollno=rollno).all()
+
+	for i in follow_prof:
+		profs.append(Professors.query.filter_by(profid=i.profid).first())
+	for i in follow_stud:
+		studs.append(Students.query.filter_by(rollno=i.followed_rollno).first())
+	for i in follow_lab:
+		labs.append(Labs.query.filter_by(id=i.labid).first())
+
+	num_labs = Num_following_Lab.query.all()
+	num_studs = Num_following_Student.query.all()
+	num_profs = Num_following_Professor.query.all()
+	
+	following_labs = None
+	following_labs = Student_following_Labs.query.filter_by(rollno=rollno).all()
+	num_lab = Num_following_Lab.query.all()
+
+	my_student = []
+	my_student_id = Student_under_Professor.query.filter_by(rollno=rollno).all()
+	for i in my_student_id:
+		my_student.append(Professors.query.filter_by(profid=i.profid).first())
+	# my_student = []
+	# my_student_id = Student_under_Professor.query.filter_by(profid=id).all()
+	# for i in my_student_id:
+	# 	my_student.append(Students.query.filter_by(rollno=i.rollno).first())
+
+	return render_template('student.html', student=student, papers=papers, my_student=my_student,my_papers=my_papers, my_labs=my_labs,following_papers=following_papers,pub_likes=pub_likes, following_labs=following_labs, num_lab=num_lab,profs=profs,studs=studs,labs=labs,num_labs=num_labs,num_profs=num_profs,num_studs=num_studs,my_research_fields=research_fields, all_research_fields=all_research_fields)
+
 
 
 # Search
@@ -456,32 +808,53 @@ def search():
 
 		print (search_string)
 		print (category)
-		# user = Users.query.filter_by(username=username).first()
 
-		# if user is not None:
-		# 	# Get stored hash
-		# 	password = user.password
+		students = None
+		professors = None
+		prof_stud = None
+		my_research_fields = []
 
-		# 	# Compare Passwords
-		# 	if sha256_crypt.verify(password_candidate, password):
-		# 		# Passed
-		# 		session['logged_in'] = True
-		# 		session['username'] = username
-		# 		session['id'] = user.id
-		# 		session['category'] = category
+		num_labs = Num_following_Lab.query.all()
+		num_studs = Num_following_Student.query.all()
+		num_profs = Num_following_Professor.query.all()
+		if session['category'] == "Professor":
+			prof_stud = Student_under_Professor.query.filter_by(profid=session['prof_id']).all()
+			following_labs = Professor_following_Labs.query.filter_by(profid=session['prof_id']).all()
+			following_prof = Professor_following_Professors.query.filter_by(profid=session['prof_id']).all()
+			following_stud = Professor_following_Students.query.filter_by(profid=session['prof_id']).all()
+			my_research_fields = Professor_in_fields.query.filter_by(profid=session['prof_id']).all()
+		else:
+			prof_stud = Student_under_Professor.query.filter_by(rollno=session['rollno']).all()
+			following_labs = Student_following_Labs.query.filter_by(rollno=session['rollno']).all()
+			following_prof = Student_following_Professors.query.filter_by(rollno=session['rollno']).all()
+			following_stud = Student_following_Students.query.filter_by(rollno=session['rollno']).all()
+			my_research_fields = Student_in_fields.query.filter_by(rollno=session['rollno']).all()
 
-		# 		# flash('You are now logged in', 'success')
-		# 		return redirect(url_for('home'))
+		research_fields = []
+		for i in my_research_fields:
+			research_fields.append(str(i.field))
 
-		# 		# return redirect(url_for('dashboard'))
-		# 	else:
-		# 		error = 'Invalid login'
-		# 		return render_template('login.html', error=error)
-		# else:
-		# 	error = 'Username not found'
-		# 	return render_template('login.html', error=error)
-
-	return render_template('login.html')
+		if category == "Student":
+			students = Students.query.filter_by(name=search_string).all()
+			return render_template('search.html', search_string=search_string, students=students,following_labs=following_labs,following_prof=following_prof,following_stud=following_stud, num_studs=num_studs,prof_stud=prof_stud, my_research_fields=research_fields, all_research_fields=all_research_fields)		
+		elif category == "Professor":
+			professors = Professors.query.filter_by(name=search_string).all()
+			return render_template('search.html', search_string=search_string, professors=professors,following_labs=following_labs,following_prof=following_prof,following_stud=following_stud, num_profs=num_profs,prof_stud=prof_stud, my_research_fields=research_fields, all_research_fields=all_research_fields)
+		elif category == "Lab":
+			labs = Labs.query.filter_by(name=search_string).all()
+			num_labs = []
+			for lab in labs:
+				l = Num_following_Lab.query.filter_by(followed_labid=lab.id).first()
+				num_labs.append(l)
+			return render_template('search.html', search_string=search_string, labs=labs, num_labs=num_labs,following_labs=following_labs,following_prof=following_prof,following_stud=following_stud, my_research_fields=research_fields, all_research_fields=all_research_fields)
+		elif category == "Field of Interest":
+			pub_ids = Publication_in_fields.query.filter_by(field=search_string)
+			print (pub_ids)
+			publications = []
+			for pub in pub_ids:
+				pubn = Publications.query.filter_by(id=pub.publicationid).first()
+				publications.append(pubn)
+			return render_template('search.html', search_string=search_string, publications=publications,following_labs=following_labs,following_prof=following_prof,following_stud=following_stud, my_research_fields=research_fields, all_research_fields=all_research_fields)
 
 
 # # Edit Article
@@ -604,6 +977,223 @@ def add_dummy():
 		}
 	]
 	for data in lab:
-		labs = Labs(name=data['name'],url=data['url'], desription=data['info'], num_followers=0)
+		labs = Labs(name=data['name'],url=data['url'], description=data['info'], num_followers=0)
 		db.session.add(labs)
 	db.session.commit()
+
+def add_num_lab():
+	for i in range(10):
+		lab_count = Num_following_Lab(num = 0,followed_labid = i+1)
+		db.session.add(lab_count)
+	db.session.commit()
+
+@app.route('/follow_lab/<id>')
+@is_logged_in
+def follow_lab(id):
+	lab = Num_following_Lab.query.filter_by(followed_labid=id).first()
+	lab.num += 1
+	print(lab.num)
+	db.session.commit()
+
+	if session['category'] == "Professor":
+		prof = Professor_following_Labs(profid = session['prof_id'], labid = id)
+		db.session.add(prof)
+		db.session.commit()
+	else:
+		stud = Student_following_Labs(rollno = session['rollno'], labid = id)
+		db.session.add(stud)
+		db.session.commit()
+	return str(lab.num)
+
+@app.route('/unfollow_lab/<id>')
+@is_logged_in
+def unfollow_lab(id):
+	lab = Num_following_Lab.query.filter_by(followed_labid=id).first()
+	lab.num -= 1
+	print(lab.num)
+	db.session.commit()
+
+	if session['category'] == "Professor":
+		prof = Professor_following_Labs.query.filter_by(profid = session['prof_id']).filter_by(labid = id).first()
+		db.session.delete(prof)
+		db.session.commit()
+	else:
+		stud = Student_following_Labs.query.filter_by(rollno = session['rollno']).filter_by(labid = id).first()	
+		db.session.delete(stud)
+		db.session.commit()
+	return str(lab.num)
+
+
+@app.route('/follow_student/<id>')
+@is_logged_in
+def follow_student(id):
+	stud = Num_following_Student.query.filter_by(followed_rollno=id).first()
+	print(stud)
+	if stud == None:
+		stud = Num_following_Student(num = 1, followed_rollno = id)
+		db.session.add(stud)
+	else:	
+		stud.num += 1
+	db.session.commit()
+
+	if session['category'] == "Professor":
+		prof1 = Professor_following_Students(profid = session['prof_id'], rollno = id)
+		db.session.add(prof1)
+		db.session.commit()
+	else:
+		stud1 = Student_following_Students(rollno = session['rollno'], followed_rollno = id)
+		db.session.add(stud1)
+		db.session.commit()
+	return str(stud.num)
+
+
+@app.route('/unfollow_student/<id>')
+@is_logged_in
+def unfollow_student(id):
+	stud = Num_following_Student.query.filter_by(followed_rollno=id).first()	
+	stud.num -= 1
+	db.session.commit()
+
+	if session['category'] == "Professor":
+		prof1 = Professor_following_Students.query.filter_by(profid = session['prof_id']).filter_by(rollno = id).first()
+		db.session.delete(prof1)
+		db.session.commit()
+	else:
+		stud1 = Student_following_Students.query.filter_by(rollno = session['rollno']).filter_by(followed_rollno = id).first()
+		db.session.delete(stud1)
+		db.session.commit()
+	return str(stud.num)
+
+@app.route('/follow_professor/<id>')
+@is_logged_in
+def follow_professor(id):
+	prof = Num_following_Professor.query.filter_by(followed_profid=id).first()
+	print(prof)
+	if prof == None:
+		prof = Num_following_Professor(num = 1, followed_profid = id)
+		db.session.add(prof)
+	else:	
+		prof.num += 1
+	db.session.commit()
+
+	if session['category'] == "Professor":
+		prof1 = Professor_following_Professors(profid = session['prof_id'], followed_profid = id)
+		db.session.add(prof1)
+		db.session.commit()
+	else:
+		prof1 = Student_following_Professors(rollno = session['rollno'], profid = id)
+		db.session.add(prof1)
+		db.session.commit()
+	return str(prof.num)
+
+
+@app.route('/unfollow_professor/<id>')
+@is_logged_in
+def unfollow_professor(id):
+	prof = Num_following_Professor.query.filter_by(followed_profid=id).first()	
+	prof.num -= 1
+	db.session.commit()
+
+	if session['category'] == "Professor":
+		prof1 = Professor_following_Professors.query.filter_by(profid = session['prof_id']).filter_by(followed_profid = id).first()
+		db.session.delete(prof1)
+		db.session.commit()
+	else:
+		prof1 = Student_following_Professors.query.filter_by(rollno = session['rollno']).filter_by(profid = id).first()
+		db.session.delete(prof1)
+		db.session.commit()
+	return str(prof.num)
+
+@app.route('/like_pub/<id>')
+@is_logged_in
+def like_pub(id):
+	pub = Publications.query.filter_by(id=id).first()	
+	pub.likes += 1
+	db.session.commit()
+
+	if session['category'] == "Professor":
+		prof = Professor_likes_Publications(profid = session['prof_id'], publicationid = id)
+		db.session.add(prof)
+		db.session.commit()
+	else:
+		stud = Student_likes_Publications(rollno = session['rollno'], publicationid = id)
+		db.session.add(stud)
+		db.session.commit()
+	return str(pub.likes)
+
+@app.route('/unlike_pub/<id>')
+@is_logged_in
+def unlike_pub(id):
+	pub = Publications.query.filter_by(id=id).first()	
+	pub.likes -= 1
+	db.session.commit()
+
+	if session['category'] == "Professor":
+		prof = Professor_likes_Publications.query.filter_by(profid = session['prof_id']).filter_by(publicationid = id).first()
+		db.session.delete(prof)
+		db.session.commit()
+	else:
+		stud = Student_likes_Publications.query.filter_by(rollno = session['rollno']).filter_by(publicationid = id).first()
+		db.session.delete(stud)
+		db.session.commit()
+	return str(pub.likes)
+
+@app.route('/add_lab/<id>')
+@is_logged_in
+def add_lab(id):
+	if session['category'] == "Professor":
+		prof = Professor_enrolledin_Labs(profid=session['prof_id'], labid = id)
+		db.session.add(prof)
+	else:	
+		stud = Student_enrolledin_Labs(rollno=session['rollno'], labid = id)
+		db.session.add(stud)
+	db.session.commit()
+	return "lab added"
+
+@app.route('/remove_lab/<id>')
+@is_logged_in
+def remove_lab(id):
+	if session['category'] == "Professor":
+		prof = Professor_enrolledin_Labs(profid=session['prof_id'], labid = id)
+		db.session.delete(prof)
+	else:	
+		stud = Student_enrolledin_Labs(rollno=session['rollno'], labid = id)
+		db.session.delete(stud)
+	db.session.commit()
+	return "lab removed"
+
+@app.route('/add_professor/<id>')
+@is_logged_in
+def add_professor(id):
+	stud_prof = Student_under_Professor.query.filter_by(profid=id).filter_by(rollno=session['rollno']).first()
+	if stud_prof == None:
+		stud_prof = Student_under_Professor(profid=id, rollno=session['rollno'])
+		db.session.add(stud_prof)
+		db.session.commit()
+	return ""
+
+@app.route('/remove_professor/<id>')
+@is_logged_in
+def remove_professor(id):
+	stud_prof = Student_under_Professor.query.filter_by(rollno=session['rollno']).filter_by(profid = id).first()
+	db.session.delete(stud_prof)
+	db.session.commit()
+	return ""
+
+@app.route('/add_student/<id>')
+@is_logged_in
+def add_student(id):
+	stud_prof = Student_under_Professor.query.filter_by(rollno=id).filter_by(profid=session['prof_id']).first()
+	if stud_prof == None:
+		stud_prof = Student_under_Professor(rollno=id, profid=session['prof_id'])
+		db.session.add(stud_prof)
+		db.session.commit()
+	return ""
+
+@app.route('/remove_student/<id>')
+@is_logged_in
+def remove_student(id):
+	stud_prof = Student_under_Professor.query.filter_by(rollno=id).filter_by(profid =session['prof_id']).first()
+	db.session.delete(stud_prof)
+	db.session.commit()
+	return ""

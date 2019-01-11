@@ -8,16 +8,16 @@
     <div class="col s12 m12 l4">
         <div class="card">
             <div class="card-image" align="center">
-                    <img src="{{ url_for('static', filename = prof.fname + '.jpg') }}" style="height:180px; width: auto;">
+                    <img src="{{ url_for('static', filename = student.fname + '.jpg') }}" style="height:180px; width: auto;">
                 <!-- <span class="card-title">Card Title</span> -->
             </div>
             <div class="card-content" align="center">
                 <p>
-                <b><h6>Name: </b>{{prof.name}}</h6>
-                <b><h6>Email Id: </b>{{prof.email}}</h6>
-                <b><h6>Research Center: </b>{{prof.research_center}}</h6>
-                <b><h6>Year of Join: </b>{{prof.yearofjoin}}</h6>
-                <b><h6 id="prof_follow_{{prof.profid}}">Followers: </b>124</h6>
+                <b><h6>Name: </b>{{student.name}}</h6>
+                <b><h6>Email Id: </b>{{student.email}}</h6>
+                <b><h6>Research Center: </b>{{student.research_center}}</h6>
+                <b><h6>Year of Join: </b>{{student.yearofjoin}}</h6>
+                <b><h6 id="student_follow_{{student.rollno}}">Followers: </b>124</h6>
                 </p>
             </div>
         </div>
@@ -32,7 +32,7 @@
                         <li class="tab col s3"><a href="#My_Research"><b>Work</b></a></li>
                         <li class="tab col s3"><a href="#Following"><b>Following</b></a></li>
                         <li class="tab col s3"><a href="#My_Labs"><b>Labs</b></a></li>
-                        <li class="tab col s3"><a href="#My_students"><b>Students</b></a></li>
+                        <li class="tab col s3"><a href="#My_guides"><b>Guides</b></a></li>
                     </ul>
                 </div>
             </nav>
@@ -89,7 +89,7 @@
                     <div class="col s12 m2 l4"></div>
                     <div class="col s12 m8 l4">
                         <div class="card">
-                            <div class="card-image" align="center"> 
+                            <div class="card-image" align="center">
                                     <img src="{{ url_for('static', filename = i.fname + '.jpg') }}" style="height:180px; width: auto;">
                                     <!-- <img src="static/profile_images/{{ i.fname + '.jpg' | default('static/profile_images/profile_girl.png') }}" style="height:180px; width: auto;"> -->
                                 <!-- <span class="card-title">Card Title</span> -->
@@ -116,7 +116,7 @@
                 </script>
             {% endfor %}
         {% endif %}
-        
+
         {% if studs %}
             <h4 align="center">Students</h4>
             {% for i in studs %}
@@ -125,7 +125,9 @@
                         <div class="col s12 m8 l4">
                             <div class="card">
                                 <div class="card-image" align="center">
-                                    <img src="{{ url_for('static', filename = i.fname + '.jpg') }}" style="height:180px; width: auto;">
+                                        <img src="{{ url_for('static', filename = i.fname + '.jpg') }}" style="height:180px; width: auto;">
+                                        <!-- <img src="static/profile_images/{{ i.fname + '.jpg' | default('static/profile_images/profile_girl.png') }}" style="height:180px; width: auto;"> -->
+                                    <!-- <span class="card-title">Card Title</span> -->
                                 </div>
                             <div class="card-content">
                                 <p>
@@ -150,7 +152,7 @@
                 </script>
             {% endfor %}
         {% endif %}
-        
+
         {% if labs %}
             <h4 align="center">Labs</h4>
             {% for i in labs %}
@@ -203,37 +205,36 @@
         <br>
     </div>
 
-    <div id="My_students" class="col s12" style="overflow:auto;">
+    <div id="My_guides" class="col s12" style="overflow:auto;">
         {% for i in my_student %}
-            <div class="row">
-                <div class="col s12 m2 l4"></div>
-                    <div class="col s12 m8 l4">
-                        <div class="card">
-                            <div class="card-image" align="center">
-                                    <img src="{{ url_for('static', filename = i.fname + '.jpg') }}" style="height:180px; width: auto;">
-                                <!-- <span class="card-title">Card Title</span> -->
-                            </div>
-                        <div class="card-content">
-                            <p>
-                            <b><h6>Name: </b>{{i.name}}</h6>
-                            <b><h6>Roll no: </b>{{i.rollno}}</h6>
-                            <b><h6>Email Id: </b>{{i.email}}</h6>
-                            <b><h6>Stream: </b>{{i.stream}}</h6>
-                            <b><h6>Year of Join: </b>{{i.yearofjoin}}</h6>
-                            <b><h6 id="mystud_follow_{{i.rollno}}">Followers: </b></h6>
-                            </p>
-                        </div>
-                        <div class="card-action" align="center">
-                          <a href="/student/{{i.rollno}}">Click here to see profile</a>
-                        </div>
+        <div class="row">
+            <div class="col s12 m2 l4"></div>
+            <div class="col s12 m8 l4">
+                <div class="card">
+                    <div class="card-image" align="center">
+                            <img src="{{ url_for('static', filename = i.fname + '.jpg') }}" style="height:180px; width: auto;">
+                        <!-- <span class="card-title">Card Title</span> -->
+                    </div>
+                    <div class="card-content">
+                        <p>
+                        <b><h6>Name: </b>{{i.name}}</h6>
+                        <b><h6>Email Id: </b>{{i.email}}</h6>
+                        <b><h6>Research Center: </b>{{i.research_center}}</h6>
+                        <b><h6>Year of Join: </b>{{i.yearofjoin}}</h6>
+                        <b><h6 id="myprof_follow_{{i.profid}}">Followers: </b>124</h6>
+                        </p>
+                    </div>
+                    <div class="card-action" align="center">
+                        <a href="/professor/{{i.profid}}">Click here to see profile</a>
                     </div>
                 </div>
             </div>
+        </div>
         {% endfor %}
-        {% for i in num_studs %}
-          <script type="text/javascript">
-            set_following_mystuds('{{ i.followed_rollno }}','{{ i.num }}');
-          </script>
+        {% for i in num_profs %}
+            <script type="text/javascript">
+                set_following_myprofs('{{ i.followed_profid }}','{{ i.num }}');
+            </script>
         {% endfor %}
     </div>
 
